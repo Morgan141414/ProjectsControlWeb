@@ -6,78 +6,150 @@ import {
   BarChart3,
   Shield,
   Settings,
-  PanelLeftClose,
-  PanelLeft,
+  CreditCard,
+  Table2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/stores/uiStore'
 
-const navItems = [
-  { to: '/dashboard', label: 'Главная', icon: LayoutDashboard },
-  { to: '/profile', label: 'Профиль', icon: User },
-  { to: '/activity', label: 'Активность', icon: Activity },
-  { to: '/reports', label: 'Отчёты', icon: BarChart3 },
-  { to: '/admin', label: 'Админ', icon: Shield },
-  { to: '/settings', label: 'Настройки', icon: Settings },
+const mainNavItems = [
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/reports', label: 'Tables', icon: Table2 },
+  { to: '/admin', label: 'Billing', icon: CreditCard },
+]
+
+const accountNavItems = [
+  { to: '/profile', label: 'Profile', icon: User },
+  { to: '/activity', label: 'Activity', icon: Activity },
+  { to: '/settings', label: 'Settings', icon: Settings },
 ]
 
 export function Sidebar() {
   const collapsed = useUiStore((s) => s.sidebarCollapsed)
-  const toggleSidebar = useUiStore((s) => s.toggleSidebar)
 
   return (
     <aside
       className={cn(
-        'flex h-screen flex-col border-r bg-sidebar text-sidebar-foreground transition-all duration-200',
-        collapsed ? 'w-16' : 'w-60',
+        'flex h-screen flex-col transition-all duration-300',
+        collapsed ? 'w-20' : 'w-64',
       )}
+      style={{
+        background: 'linear-gradient(180deg, #0B1437 0%, #060B26 100%)',
+      }}
     >
       {/* Logo */}
-      <div className="flex h-14 items-center gap-2 border-b px-4">
-        <LayoutDashboard className="size-5 shrink-0" />
+      <div className="flex items-center gap-3 px-6 py-8">
+        <div
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl"
+          style={{ background: 'linear-gradient(135deg, #868CFF 0%, #4318FF 100%)' }}
+        >
+          <BarChart3 className="h-4 w-4 text-white" />
+        </div>
         {!collapsed && (
-          <span className="text-sm font-semibold tracking-tight">
-            ProjectsControl
+          <span className="text-sm font-bold tracking-wider text-white uppercase">
+            Vision UI Free
           </span>
         )}
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1 p-2">
-        {navItems.map(({ to, label, icon: Icon }) => (
+      {/* Divider */}
+      <div className="mx-4 h-px bg-white/10" />
+
+      {/* Main Navigation */}
+      <nav className="flex-1 px-4 pt-6">
+        {mainNavItems.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}
             className={({ isActive }) =>
               cn(
-                'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                'flex items-center gap-3 rounded-xl px-4 py-3 mb-1 text-sm font-medium transition-all duration-200',
                 isActive
-                  ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                  : 'text-sidebar-foreground/70',
-                collapsed && 'justify-center px-0',
+                  ? 'bg-white/10 text-white shadow-lg'
+                  : 'text-white/60 hover:text-white hover:bg-white/5',
+                collapsed && 'justify-center px-3',
               )
             }
           >
-            <Icon className="size-4 shrink-0" />
-            {!collapsed && <span>{label}</span>}
+            {({ isActive }) => (
+              <>
+                <div
+                  className={cn(
+                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition-all',
+                    isActive
+                      ? 'bg-[#0075FF] shadow-[0_0_12px_rgba(0,117,255,0.4)]'
+                      : 'bg-white/10',
+                  )}
+                >
+                  <Icon className="h-4 w-4 text-white" />
+                </div>
+                {!collapsed && <span>{label}</span>}
+              </>
+            )}
+          </NavLink>
+        ))}
+
+        {/* Account Pages Section */}
+        {!collapsed && (
+          <p className="mt-6 mb-3 px-4 text-xs font-bold uppercase tracking-wider text-white/40">
+            Account Pages
+          </p>
+        )}
+        {collapsed && <div className="my-4 h-px bg-white/10" />}
+
+        {accountNavItems.map(({ to, label, icon: Icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) =>
+              cn(
+                'flex items-center gap-3 rounded-xl px-4 py-3 mb-1 text-sm font-medium transition-all duration-200',
+                isActive
+                  ? 'bg-white/10 text-white shadow-lg'
+                  : 'text-white/60 hover:text-white hover:bg-white/5',
+                collapsed && 'justify-center px-3',
+              )
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <div
+                  className={cn(
+                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition-all',
+                    isActive
+                      ? 'bg-[#0075FF] shadow-[0_0_12px_rgba(0,117,255,0.4)]'
+                      : 'bg-white/10',
+                  )}
+                >
+                  <Icon className="h-4 w-4 text-white" />
+                </div>
+                {!collapsed && <span>{label}</span>}
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
 
-      {/* Collapse toggle */}
-      <div className="border-t p-2">
-        <button
-          onClick={toggleSidebar}
-          className="flex w-full items-center justify-center rounded-md p-2 text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-        >
-          {collapsed ? (
-            <PanelLeft className="size-4" />
-          ) : (
-            <PanelLeftClose className="size-4" />
-          )}
-        </button>
-      </div>
+      {/* Help card */}
+      {!collapsed && (
+        <div className="mx-4 mb-4">
+          <div
+            className="rounded-2xl p-4 text-center"
+            style={{
+              background: 'linear-gradient(135deg, #0075FF 0%, #7551FF 100%)',
+            }}
+          >
+            <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
+              <Shield className="h-5 w-5 text-white" />
+            </div>
+            <p className="text-xs font-bold text-white">Need help?</p>
+            <p className="mt-1 text-[10px] text-white/70">Please check our docs</p>
+            <button className="mt-3 w-full rounded-xl bg-white/20 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-white/30">
+              DOCUMENTATION
+            </button>
+          </div>
+        </div>
+      )}
     </aside>
   )
 }

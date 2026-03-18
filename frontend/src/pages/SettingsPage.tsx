@@ -1,24 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
-import { Badge } from '@/components/ui/badge'
-import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
 import { useAuthStore } from '@/stores/authStore'
 import { useOrgStore } from '@/stores/orgStore'
-import { useUiStore } from '@/stores/uiStore'
 import { getConsentStatus, acceptConsent } from '@/api/consent'
 import type { ConsentStatus } from '@/types'
+import { LogOut, Shield, Bell } from 'lucide-react'
 
 export default function SettingsPage() {
   const navigate = useNavigate()
   const logout = useAuthStore((s) => s.logout)
   const { orgId } = useOrgStore()
   const clearOrg = useOrgStore((s) => s.clear)
-  const { theme, toggleTheme } = useUiStore()
 
   const [consent, setConsent] = useState<ConsentStatus | null>(null)
   const [consentLoading, setConsentLoading] = useState(false)
@@ -28,7 +21,7 @@ export default function SettingsPage() {
     setConsentLoading(true)
     getConsentStatus(orgId)
       .then((r) => setConsent(r.data))
-      .catch(() => toast.error('Не удалось загрузить статус согласия'))
+      .catch(() => toast.error('Failed to load consent status'))
       .finally(() => setConsentLoading(false))
   }, [orgId])
 
@@ -38,9 +31,9 @@ export default function SettingsPage() {
     try {
       await acceptConsent(orgId, 'v1')
       setConsent({ accepted: true })
-      toast.success('Согласие принято')
+      toast.success('Consent accepted')
     } catch {
-      toast.error('Не удалось принять согласие')
+      toast.error('Failed to accept consent')
     } finally {
       setConsentLoading(false)
     }
@@ -53,72 +46,70 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 p-6">
-      <h1 className="text-2xl font-bold">Настройки</h1>
+    <div className="mx-auto max-w-2xl space-y-6">
+      <h1 className="text-2xl font-bold text-white">Settings</h1>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Тема</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <Label>Тёмная тема</Label>
-              <p className="text-sm text-muted-foreground">
-                Текущая тема: {theme === 'dark' ? 'Тёмная' : 'Светлая'}
-              </p>
-            </div>
-            <Switch
-              checked={theme === 'dark'}
-              onCheckedChange={toggleTheme}
-            />
+      {/* Theme info */}
+      <div className="vision-card p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0075FF]">
+            <Bell className="h-5 w-5 text-white" />
           </div>
-        </CardContent>
-      </Card>
+          <h3 className="text-lg font-bold text-white">Appearance</h3>
+        </div>
+        <p className="text-sm text-white/50">
+          Vision UI Dark Theme is active. This design uses a permanent dark mode for the best experience.
+        </p>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Согласие</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {!orgId ? (
-            <p className="text-sm text-muted-foreground">
-              Присоединитесь к организации, чтобы управлять согласием.
-            </p>
-          ) : consentLoading ? (
-            <p className="text-sm text-muted-foreground">Загрузка...</p>
-          ) : consent?.accepted ? (
-            <div className="flex items-center gap-3">
-              <Badge variant="default">Принято</Badge>
-              {consent.accepted_at && (
-                <span className="text-sm text-muted-foreground">
-                  {new Date(consent.accepted_at).toLocaleDateString('ru-RU')}
-                </span>
-              )}
-            </div>
-          ) : (
-            <Button onClick={handleAcceptConsent} disabled={consentLoading}>
-              Принять
-            </Button>
-          )}
-        </CardContent>
-      </Card>
+      {/* Consent */}
+      <div className="vision-card p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#7551FF]">
+            <Shield className="h-5 w-5 text-white" />
+          </div>
+          <h3 className="text-lg font-bold text-white">Privacy Consent</h3>
+        </div>
+        {!orgId ? (
+          <p className="text-sm text-white/40">Join an organization to manage consent.</p>
+        ) : consentLoading ? (
+          <p className="text-sm text-white/40">Loading...</p>
+        ) : consent?.accepted ? (
+          <div className="flex items-center gap-3">
+            <span className="rounded-xl bg-[#01B574]/20 px-4 py-1.5 text-sm font-bold text-[#01B574]">Accepted</span>
+            {consent.accepted_at && (
+              <span className="text-sm text-white/40">
+                {new Date(consent.accepted_at).toLocaleDateString()}
+              </span>
+            )}
+          </div>
+        ) : (
+          <button
+            onClick={handleAcceptConsent}
+            disabled={consentLoading}
+            className="rounded-xl bg-[#0075FF] px-6 py-2 text-sm font-bold text-white hover:bg-[#0063D6] disabled:opacity-50"
+          >
+            Accept Consent
+          </button>
+        )}
+      </div>
 
-      <Separator />
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Выйти</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="mb-4 text-sm text-muted-foreground">
-            Вы будете перенаправлены на страницу входа.
-          </p>
-          <Button variant="destructive" onClick={handleLogout}>
-            Выйти из аккаунта
-          </Button>
-        </CardContent>
-      </Card>
+      {/* Logout */}
+      <div className="vision-card p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E31A1A]">
+            <LogOut className="h-5 w-5 text-white" />
+          </div>
+          <h3 className="text-lg font-bold text-white">Sign Out</h3>
+        </div>
+        <p className="text-sm text-white/40 mb-4">You will be redirected to the login page.</p>
+        <button
+          onClick={handleLogout}
+          className="rounded-xl bg-[#E31A1A]/20 border border-[#E31A1A]/30 px-6 py-2 text-sm font-bold text-[#E31A1A] hover:bg-[#E31A1A]/30 transition-colors"
+        >
+          Sign Out
+        </button>
+      </div>
     </div>
   )
 }

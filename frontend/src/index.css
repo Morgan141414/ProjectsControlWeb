@@ -16,75 +16,100 @@
   html {
     @apply font-sans;
   }
+
+  /* Custom scrollbar for Vision UI theme */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
 }
 
+/* Vision UI Dark Theme — always dark */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: #060B26;
+  --foreground: #FFFFFF;
+  --card: #111C44;
+  --card-foreground: #FFFFFF;
+  --popover: #111C44;
+  --popover-foreground: #FFFFFF;
+  --primary: #0075FF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1A1F37;
+  --secondary-foreground: #FFFFFF;
+  --muted: #1A1F37;
+  --muted-foreground: #A0AEC0;
+  --accent: #1A1F37;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E31A1A;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #0075FF;
+  --chart-1: #0075FF;
+  --chart-2: #01B574;
+  --chart-3: #7551FF;
+  --chart-4: #FFB547;
+  --chart-5: #E31A1A;
+  --radius: 0.75rem;
+  --sidebar: #0B1437;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #0075FF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: rgba(255, 255, 255, 0.06);
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #0075FF;
+
+  /* Vision UI custom colors */
+  --vision-gradient-blue: linear-gradient(135deg, #868CFF 0%, #4318FF 100%);
+  --vision-gradient-green: linear-gradient(135deg, #01B574 0%, #0075FF 100%);
+  --vision-gradient-card: linear-gradient(127.09deg, rgba(6, 11, 40, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%);
+  --vision-glow: 0 0 20px rgba(0, 117, 255, 0.15);
+  --vision-card-border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+/* Keep .dark the same as root since we're always dark */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #060B26;
+  --foreground: #FFFFFF;
+  --card: #111C44;
+  --card-foreground: #FFFFFF;
+  --popover: #111C44;
+  --popover-foreground: #FFFFFF;
+  --primary: #0075FF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1A1F37;
+  --secondary-foreground: #FFFFFF;
+  --muted: #1A1F37;
+  --muted-foreground: #A0AEC0;
+  --accent: #1A1F37;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E31A1A;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #0075FF;
+  --chart-1: #0075FF;
+  --chart-2: #01B574;
+  --chart-3: #7551FF;
+  --chart-4: #FFB547;
+  --chart-5: #E31A1A;
+  --sidebar: #0B1437;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #0075FF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: rgba(255, 255, 255, 0.06);
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #0075FF;
 }
 
 @theme inline {
@@ -127,4 +152,54 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Vision UI glassmorphism card style */
+.vision-card {
+  background: linear-gradient(127.09deg, rgba(6, 11, 40, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  backdrop-filter: blur(120px);
+}
+
+/* Vision UI gradient backgrounds */
+.vision-gradient-blue {
+  background: linear-gradient(135deg, #868CFF 0%, #4318FF 100%);
+}
+
+.vision-gradient-green {
+  background: linear-gradient(135deg, #01B574 0%, #0075FF 100%);
+}
+
+.vision-gradient-purple {
+  background: linear-gradient(135deg, #7551FF 0%, #C851FF 100%);
+}
+
+/* Vision UI welcome card with jellyfish-like gradient */
+.vision-welcome-card {
+  background: linear-gradient(135deg, #0075FF 0%, #7551FF 50%, #C851FF 100%);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Neon glow effect for active elements */
+.vision-glow {
+  box-shadow: 0 0 20px rgba(0, 117, 255, 0.3);
+}
+
+/* Input style for Vision UI */
+.vision-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: white;
+  transition: border-color 0.2s;
+}
+.vision-input:focus {
+  border-color: #0075FF;
+  outline: none;
+}
+.vision-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
 }

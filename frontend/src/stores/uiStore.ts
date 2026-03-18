@@ -2,25 +2,21 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 interface UiState {
-  theme: 'light' | 'dark'
+  theme: 'dark'
   sidebarCollapsed: boolean
   toggleTheme: () => void
-  setTheme: (theme: 'light' | 'dark') => void
+  setTheme: (theme: 'dark') => void
   toggleSidebar: () => void
 }
 
 export const useUiStore = create<UiState>()(
   persist(
     (set) => ({
-      theme: 'light',
+      theme: 'dark' as const,
       sidebarCollapsed: false,
 
-      toggleTheme: () =>
-        set((state) => ({
-          theme: state.theme === 'light' ? 'dark' : 'light',
-        })),
-
-      setTheme: (theme) => set({ theme }),
+      toggleTheme: () => set({ theme: 'dark' }),
+      setTheme: () => set({ theme: 'dark' }),
 
       toggleSidebar: () =>
         set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
