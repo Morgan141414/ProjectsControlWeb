@@ -9,7 +9,7 @@ export function startSession(orgId: string, deviceName: string, osName: string) 
 }
 
 export function stopSession(orgId: string, sessionId: string) {
-  return api.post(`/orgs/${orgId}/sessions/${sessionId}/stop`)
+  return api.post(`/orgs/${orgId}/sessions/${sessionId}/stop`, {})
 }
 
 export function listMySessions(orgId: string) {

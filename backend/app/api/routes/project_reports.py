@@ -3,8 +3,8 @@ from datetime import date, datetime
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.core.config import settings
 from app.core.deps import get_current_user, get_db, get_org_membership, require_role
+from app.core.metrics_utils import cap_delta
 from app.models.activity import ActivityEvent, ScreenSession
 from app.models.enums import ActivityType, OrgRole, TaskStatus
 from app.models.project import Project
@@ -16,14 +16,6 @@ from app.schemas.project_reports import ProjectKPIItem, ProjectKPIReport
 router = APIRouter(prefix="/orgs/{org_id}/reports/projects", tags=["reports"])
 
 
-def _cap_delta(delta_seconds: float) -> int:
-    if delta_seconds <= 0:
-        return 0
-    if delta_seconds > settings.METRICS_MAX_GAP_SECONDS:
-        return settings.METRICS_MAX_GAP_SECONDS
-    return int(delta_seconds)
-
-
 def _compute_seconds(events: list[ActivityEvent]) -> tuple[int, int]:
     observed_seconds = 0
     idle_seconds = 0
@@ -31,7 +23,7 @@ def _compute_seconds(events: list[ActivityEvent]) -> tuple[int, int]:
     for index in range(len(events) - 1):
         current = events[index]
         next_event = events[index + 1]
-        delta = _cap_delta((next_event.captured_at - current.captured_at).total_seconds())
+        delta = cap_delta((next_event.captured_at - current.captured_at).total_seconds())
         if delta == 0:
             continue
         observed_seconds += delta

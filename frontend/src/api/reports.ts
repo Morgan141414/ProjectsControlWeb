@@ -1,13 +1,6 @@
 import api from './client'
+import { cleanParams } from './utils'
 import type { KpiReport, ReportExport } from '../types'
-
-function cleanParams(obj: Record<string, unknown>): Record<string, string> {
-  const result: Record<string, string> = {}
-  for (const [key, value] of Object.entries(obj)) {
-    if (value != null) result[key] = String(value)
-  }
-  return result
-}
 
 export function getOrgKpi(
   orgId: string,
@@ -37,16 +30,21 @@ export function exportOrgKpi(
     project_id?: string
   },
 ) {
-  return api.post<ReportExport>(`/orgs/${orgId}/reports/exports/org-kpi`, cleanParams(params))
+  const { export_format, ...body } = params
+  return api.post<ReportExport>(`/orgs/${orgId}/reports/exports/org-kpi`, cleanParams(body), {
+    params: { export_format },
+  })
 }
 
 export function exportProjectKpi(
   orgId: string,
   params: { export_format: string; start_date?: string; end_date?: string },
 ) {
+  const { export_format, ...body } = params
   return api.post<ReportExport>(
     `/orgs/${orgId}/reports/exports/project-kpi`,
-    cleanParams(params),
+    cleanParams(body),
+    { params: { export_format } },
   )
 }
 

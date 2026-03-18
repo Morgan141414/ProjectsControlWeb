@@ -10,7 +10,7 @@ export function getOrg(orgId: string) {
 }
 
 export function joinOrg(orgCode: string) {
-  return api.post('/orgs/join-request', { code: orgCode })
+  return api.post('/orgs/join-request', { org_code: orgCode })
 }
 
 export function listJoinRequests(orgId: string) {

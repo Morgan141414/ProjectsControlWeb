@@ -32,7 +32,7 @@ import {
 function StatCards() {
   const stats = [
     {
-      label: "Today's Money",
+      label: 'Бюджет за день',
       value: '$53,000',
       change: '+55%',
       positive: true,
@@ -40,7 +40,7 @@ function StatCards() {
       iconBg: 'linear-gradient(135deg, #0075FF 0%, #00D1FF 100%)',
     },
     {
-      label: "Today's Users",
+      label: 'Пользователи сегодня',
       value: '2,300',
       change: '+5%',
       positive: true,
@@ -48,7 +48,7 @@ function StatCards() {
       iconBg: 'linear-gradient(135deg, #0075FF 0%, #00D1FF 100%)',
     },
     {
-      label: 'New Clients',
+      label: 'Новые клиенты',
       value: '+3,052',
       change: '-14%',
       positive: false,
@@ -56,7 +56,7 @@ function StatCards() {
       iconBg: 'linear-gradient(135deg, #0075FF 0%, #00D1FF 100%)',
     },
     {
-      label: 'Total Sales',
+      label: 'Общие продажи',
       value: '$173,000',
       change: '+8%',
       positive: true,
@@ -113,17 +113,14 @@ function WelcomeCard() {
           background: 'radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)',
         }}
       />
-      <p className="text-xs text-white/70 uppercase tracking-wider">Welcome back,</p>
+      <p className="text-xs text-white/70 uppercase tracking-wider">С возвращением,</p>
       <h2 className="mt-1 text-2xl font-bold text-white">
-        {fullName ?? 'User'}
+        {fullName ?? 'Пользователь'}
       </h2>
       <p className="mt-2 text-sm text-white/80">
-        {getGreeting()}! Glad to see you again.
+        {getGreeting()}! Рады видеть вас снова.
       </p>
-      <p className="mt-1 text-sm text-white/60">Ask me anything.</p>
-      <button className="mt-4 text-sm font-bold text-white underline decoration-white/50 underline-offset-4 hover:decoration-white transition-colors">
-        Tap to record &rarr;
-      </button>
+      <p className="mt-1 text-sm text-white/60">Хорошего рабочего дня!</p>
     </div>
   )
 }
@@ -134,8 +131,8 @@ function WelcomeCard() {
 function SatisfactionRate() {
   return (
     <div className="vision-card flex flex-col items-center justify-center p-6">
-      <p className="text-xs text-white/50 mb-4">Satisfaction Rate</p>
-      <p className="text-xs text-white/50 mb-2">From all projects</p>
+      <p className="text-xs text-white/50 mb-4">Уровень удовлетворённости</p>
+      <p className="text-xs text-white/50 mb-2">По всем проектам</p>
       {/* Simple gauge */}
       <div className="relative flex h-32 w-32 items-center justify-center">
         <svg viewBox="0 0 120 120" className="h-32 w-32 -rotate-90">
@@ -156,7 +153,7 @@ function SatisfactionRate() {
           <span className="text-2xl font-bold text-white">95%</span>
         </div>
       </div>
-      <p className="mt-2 text-xs text-white/50">Based on likes</p>
+      <p className="mt-2 text-xs text-white/50">На основе отзывов</p>
     </div>
   )
 }
@@ -167,11 +164,11 @@ function SatisfactionRate() {
 function ReferralTracking() {
   return (
     <div className="vision-card p-6">
-      <p className="text-xs text-white/50 mb-1">Referral Tracking</p>
+      <p className="text-xs text-white/50 mb-1">Реферальная статистика</p>
       <div className="flex items-center gap-4 mb-4">
         <div>
           <p className="text-3xl font-bold text-white">145</p>
-          <p className="text-xs text-white/50">people</p>
+          <p className="text-xs text-white/50">человек</p>
         </div>
       </div>
       {/* Simple gauge */}
@@ -193,11 +190,11 @@ function ReferralTracking() {
       </div>
       <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
         <div className="rounded-xl bg-white/5 p-2 text-center">
-          <p className="text-white/50">Total Score</p>
+          <p className="text-white/50">Общий балл</p>
           <p className="font-bold text-white">1,465</p>
         </div>
         <div className="rounded-xl bg-white/5 p-2 text-center">
-          <p className="text-white/50">Invited</p>
+          <p className="text-white/50">Приглашено</p>
           <p className="font-bold text-white">1,465</p>
         </div>
       </div>
@@ -221,7 +218,7 @@ function CheckTable() {
   return (
     <div className="vision-card p-6">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-lg font-bold text-white">Check Table</h3>
+        <h3 className="text-lg font-bold text-white">Таблица проверки</h3>
         <button className="text-white/50 hover:text-white">
           <MoreHorizontal className="h-5 w-5" />
         </button>
@@ -231,10 +228,10 @@ function CheckTable() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-white/10 text-left">
-              <th className="px-3 py-3 text-xs font-medium text-white/40 uppercase">Title</th>
-              <th className="px-3 py-3 text-xs font-medium text-white/40 uppercase">Title</th>
-              <th className="px-3 py-3 text-xs font-medium text-white/40 uppercase">Title</th>
-              <th className="px-3 py-3 text-xs font-medium text-white/40 uppercase">Title</th>
+              <th className="px-3 py-3 text-xs font-medium text-white/40 uppercase">Название</th>
+              <th className="px-3 py-3 text-xs font-medium text-white/40 uppercase">Прогресс</th>
+              <th className="px-3 py-3 text-xs font-medium text-white/40 uppercase">Кол-во</th>
+              <th className="px-3 py-3 text-xs font-medium text-white/40 uppercase">Дата</th>
             </tr>
           </thead>
           <tbody>
@@ -280,17 +277,17 @@ function ActiveUsersChart() {
   ]
 
   const activeStats = [
-    { label: 'Users', value: '32,984', icon: Wallet, color: '#0075FF' },
-    { label: 'Clicks', value: '2,42m', icon: Globe, color: '#0075FF' },
-    { label: 'Sales', value: '2,400$', icon: ShoppingCart, color: '#0075FF' },
-    { label: 'Items', value: '320', icon: FileText, color: '#0075FF' },
+    { label: 'Пользователи', value: '32,984', icon: Wallet, color: '#0075FF' },
+    { label: 'Клики', value: '2,42m', icon: Globe, color: '#0075FF' },
+    { label: 'Продажи', value: '2,400$', icon: ShoppingCart, color: '#0075FF' },
+    { label: 'Объекты', value: '320', icon: FileText, color: '#0075FF' },
   ]
 
   return (
     <div className="vision-card p-6">
-      <h3 className="text-xs text-white/50 uppercase mb-1">Active Users</h3>
+      <h3 className="text-xs text-white/50 uppercase mb-1">Активные пользователи</h3>
       <p className="text-xs text-white/40 mb-4">
-        (<span className="text-[#01B574]">+23%</span>) than last week
+        (<span className="text-[#01B574]">+23%</span>) по сравнению с прошлой неделей
       </p>
 
       <div className="h-48">
@@ -373,11 +370,11 @@ function OrgSection() {
   if (orgId) {
     return (
       <div className="vision-card p-6">
-        <h3 className="text-lg font-bold text-white mb-2">Organization</h3>
+        <h3 className="text-lg font-bold text-white mb-2">Организация</h3>
         <p className="text-sm text-white/70">{orgName}</p>
         {orgCode && (
           <div className="mt-2 flex items-center gap-2">
-            <span className="text-xs text-white/40">Code:</span>
+            <span className="text-xs text-white/40">Код:</span>
             <span className="rounded-lg bg-white/10 px-3 py-1 text-xs font-bold text-white">{orgCode}</span>
           </div>
         )}
@@ -387,13 +384,13 @@ function OrgSection() {
 
   return (
     <div className="vision-card p-6">
-      <h3 className="text-lg font-bold text-white mb-4">Organization</h3>
+      <h3 className="text-lg font-bold text-white mb-4">Организация</h3>
       <div className="space-y-4">
         <div>
-          <label className="block text-xs text-white/50 mb-1">Create Organization</label>
+          <label className="block text-xs text-white/50 mb-1">Создать организацию</label>
           <div className="flex gap-2">
             <input
-              placeholder="Name"
+              placeholder="Название"
               value={newOrgName}
               onChange={(e) => setNewOrgName(e.target.value)}
               className="flex-1 h-10 rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder:text-white/30 focus:border-[#0075FF] focus:outline-none"
@@ -403,15 +400,15 @@ function OrgSection() {
               disabled={loading}
               className="rounded-xl bg-[#0075FF] px-4 text-sm font-bold text-white hover:bg-[#0063D6] disabled:opacity-50"
             >
-              Create
+              Создать
             </button>
           </div>
         </div>
         <div>
-          <label className="block text-xs text-white/50 mb-1">Join Organization</label>
+          <label className="block text-xs text-white/50 mb-1">Присоединиться к организации</label>
           <div className="flex gap-2">
             <input
-              placeholder="Organization code"
+              placeholder="Код организации"
               value={joinCode}
               onChange={(e) => setJoinCode(e.target.value)}
               className="flex-1 h-10 rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder:text-white/30 focus:border-[#0075FF] focus:outline-none"
@@ -421,7 +418,7 @@ function OrgSection() {
               disabled={loading}
               className="rounded-xl border border-white/10 bg-white/5 px-4 text-sm font-bold text-white hover:bg-white/10 disabled:opacity-50"
             >
-              Join
+              Вступить
             </button>
           </div>
         </div>
@@ -449,13 +446,13 @@ function TodayTasks() {
 
   return (
     <div className="vision-card p-6">
-      <h3 className="text-lg font-bold text-white mb-4">Today's Tasks</h3>
+      <h3 className="text-lg font-bold text-white mb-4">Задачи на сегодня</h3>
       {!orgId ? (
-        <p className="text-sm text-white/40">Join an organization first</p>
+        <p className="text-sm text-white/40">Сначала присоединитесь к организации</p>
       ) : loading ? (
-        <p className="text-sm text-white/40">Loading...</p>
+        <p className="text-sm text-white/40">Загрузка...</p>
       ) : tasks.length === 0 ? (
-        <p className="text-sm text-white/40">No tasks for today</p>
+        <p className="text-sm text-white/40">Нет задач на сегодня</p>
       ) : (
         <ul className="space-y-2">
           {tasks.map((t) => (
@@ -511,26 +508,26 @@ function DailyReport() {
 
   return (
     <div className="vision-card p-6">
-      <h3 className="text-lg font-bold text-white mb-4">Daily Report</h3>
+      <h3 className="text-lg font-bold text-white mb-4">Дневной отчёт</h3>
       <div className="space-y-3">
         <div>
-          <label className="block text-xs text-white/50 mb-1">Project</label>
+          <label className="block text-xs text-white/50 mb-1">Проект</label>
           <select
             value={selectedProject}
             onChange={(e) => setSelectedProject(e.target.value)}
             className="w-full h-10 rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white focus:border-[#0075FF] focus:outline-none"
           >
-            <option value="" className="bg-[#111C44]">Select project</option>
+            <option value="" className="bg-[#111C44]">Выберите проект</option>
             {projects.map((p) => (
               <option key={p.id} value={p.id} className="bg-[#111C44]">{p.name}</option>
             ))}
           </select>
         </div>
         <div>
-          <label className="block text-xs text-white/50 mb-1">Content</label>
+          <label className="block text-xs text-white/50 mb-1">Содержание</label>
           <textarea
             rows={3}
-            placeholder="What was done today..."
+            placeholder="Что было сделано сегодня..."
             value={content}
             onChange={(e) => setContent(e.target.value)}
             className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/30 focus:border-[#0075FF] focus:outline-none resize-none"
@@ -541,7 +538,7 @@ function DailyReport() {
           disabled={sending || !selectedProject}
           className="w-full h-10 rounded-xl bg-[#0075FF] text-sm font-bold text-white uppercase hover:bg-[#0063D6] disabled:opacity-50"
         >
-          {sending ? 'Sending...' : 'Send Report'}
+          {sending ? 'Отправка...' : 'Отправить отчёт'}
         </button>
       </div>
     </div>

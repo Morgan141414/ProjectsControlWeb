@@ -1,5 +1,5 @@
 import json
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -11,6 +11,7 @@ from app.core.deps import get_current_user, get_db, get_org_membership, require_
 from app.core.report_exports import ReportExportError, export_org_kpi, export_project_kpi
 from app.core.reporting_runner import run_schedule_export
 from app.core.notifications import send_notification
+from app.core.time import utc_now_naive
 from app.models.enums import AuditAction, NotificationEvent, OrgRole
 from app.models.reporting import ReportExport, ReportSchedule
 from app.models.user import User
@@ -103,7 +104,7 @@ def export_org_kpi_report(
         project_id=project_id,
     )
     params_json = _serialize_params(start_date, end_date, team_id, project_id)
-    export_id = current_user.id + "-" + datetime.utcnow().strftime("%Y%m%d%H%M%S%f")
+    export_id = current_user.id + "-" + utc_now_naive().strftime("%Y%m%d%H%M%S%f")
 
     try:
         file_path, size_bytes = export_org_kpi(report, export_id, export_format)
@@ -155,7 +156,7 @@ def export_project_kpi_report(
         end_date=end_date,
     )
     params_json = _serialize_params(start_date, end_date, None, None)
-    export_id = current_user.id + "-" + datetime.utcnow().strftime("%Y%m%d%H%M%S%f")
+    export_id = current_user.id + "-" + utc_now_naive().strftime("%Y%m%d%H%M%S%f")
 
     try:
         file_path, size_bytes = export_project_kpi(report, export_id, export_format)

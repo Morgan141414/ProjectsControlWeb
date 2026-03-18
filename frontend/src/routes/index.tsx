@@ -10,6 +10,7 @@ const SettingsPage = lazy(() => import('@/pages/SettingsPage'))
 const ActivityPage = lazy(() => import('@/pages/ActivityPage'))
 const AdminConsolePage = lazy(() => import('@/pages/AdminConsolePage'))
 const ReportsPage = lazy(() => import('@/pages/ReportsPage'))
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 
 function SuspenseWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -98,5 +99,13 @@ export const router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    path: '*',
+    element: (
+      <SuspenseWrapper>
+        <NotFoundPage />
+      </SuspenseWrapper>
+    ),
   },
 ])

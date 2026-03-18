@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_current_user, get_db, get_org_membership
+from app.core.metrics_utils import cap_delta
 from app.models.activity import ActivityEvent, ScreenSession
 from app.models.enums import ActivityType, OrgRole, TaskStatus
 from app.models.project import Project
@@ -52,16 +53,16 @@ def _compute_seconds(events: list[ActivityEvent]) -> tuple[int, int]:
     for index in range(len(events) - 1):
         current = events[index]
         next_event = events[index + 1]
-        delta_seconds = (next_event.captured_at - current.captured_at).total_seconds()
-        if delta_seconds <= 0:
+        delta = cap_delta((next_event.captured_at - current.captured_at).total_seconds())
+        if delta == 0:
             continue
-        observed_seconds += int(delta_seconds)
+        observed_seconds += delta
 
         if current.event_type == ActivityType.idle:
             if current.idle_seconds is not None:
-                idle_seconds += min(current.idle_seconds, int(delta_seconds))
+                idle_seconds += min(current.idle_seconds, delta)
             else:
-                idle_seconds += int(delta_seconds)
+                idle_seconds += delta
 
     return observed_seconds, idle_seconds
 

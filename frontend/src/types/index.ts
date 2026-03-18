@@ -7,6 +7,7 @@ export interface User {
   specialty?: string
   avatar_url?: string
   socials_json?: string
+  org_id?: string
 }
 
 export interface Org {

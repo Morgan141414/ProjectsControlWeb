@@ -11,6 +11,23 @@ from app.schemas.org import JoinRequestCreate, JoinRequestResponse, OrgCreate, O
 router = APIRouter(prefix="/orgs", tags=["orgs"])
 
 
+@router.get("", response_model=list[OrgResponse])
+def list_orgs(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> list[Organization]:
+    """List organizations the current user belongs to."""
+    memberships = (
+        db.query(OrgMembership)
+        .filter(OrgMembership.user_id == current_user.id)
+        .all()
+    )
+    org_ids = [m.org_id for m in memberships]
+    if not org_ids:
+        return []
+    return db.query(Organization).filter(Organization.id.in_(org_ids)).all()
+
+
 @router.post("", response_model=OrgResponse, status_code=status.HTTP_201_CREATED)
 def create_org(
     payload: OrgCreate,

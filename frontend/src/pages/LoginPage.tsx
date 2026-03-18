@@ -25,18 +25,19 @@ export default function LoginPage() {
       const { data: tokenData } = await login(email, password)
       const token = tokenData.access_token
 
-      localStorage.setItem(
+      // Write token to the appropriate storage so the API client can attach it
+      const storage = remember ? localStorage : sessionStorage
+      storage.setItem(
         'auth-storage',
         JSON.stringify({ state: { token }, version: 0 }),
       )
 
       const { data: user } = await getMe()
-      setAuth(token, user)
+      setAuth(token, user, remember ? 'local' : 'session')
 
-      if ((user as unknown as Record<string, unknown>).org_id) {
+      if (user.org_id) {
         try {
-          const orgId = (user as unknown as Record<string, unknown>).org_id as string
-          const { data: org } = await getOrg(orgId)
+          const { data: org } = await getOrg(user.org_id)
           setOrg(org.id, org.name)
         } catch {
           // org fetch failed
@@ -47,7 +48,7 @@ export default function LoginPage() {
     } catch (err: unknown) {
       const message =
         (err as { response?: { data?: { detail?: string } } })?.response?.data
-          ?.detail ?? 'Login failed'
+          ?.detail ?? 'Ошибка входа'
       toast.error(message)
     } finally {
       setLoading(false)
@@ -98,9 +99,9 @@ export default function LoginPage() {
       {/* Right side - login form */}
       <div className="flex flex-1 items-center justify-center px-8">
         <div className="w-full max-w-md">
-          <h1 className="text-3xl font-bold text-white mb-2">Nice to see you!</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">Рады вас видеть!</h1>
           <p className="text-white/50 mb-8">
-            Enter your email and password to sign in
+            Введите email и пароль для входа
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -108,7 +109,7 @@ export default function LoginPage() {
               <label className="block text-sm font-medium text-white mb-2">Email</label>
               <input
                 type="email"
-                placeholder="Your email address"
+                placeholder="Ваш email адрес"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -117,10 +118,10 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white mb-2">Password</label>
+              <label className="block text-sm font-medium text-white mb-2">Пароль</label>
               <input
                 type="password"
-                placeholder="Your password"
+                placeholder="Ваш пароль"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -139,7 +140,7 @@ export default function LoginPage() {
                   className={`absolute top-1 left-1 h-4 w-4 rounded-full bg-white transition-transform ${remember ? 'translate-x-5' : ''}`}
                 />
               </button>
-              <span className="text-sm text-white/70">Remember me</span>
+              <span className="text-sm text-white/70">Запомнить меня</span>
             </div>
 
             <button
@@ -147,14 +148,14 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full h-12 rounded-xl bg-[#0075FF] text-sm font-bold text-white uppercase tracking-wider transition-all hover:bg-[#0063D6] hover:shadow-[0_0_20px_rgba(0,117,255,0.4)] disabled:opacity-50"
             >
-              {loading ? 'Signing in...' : 'SIGN IN'}
+              {loading ? 'Вход...' : 'ВОЙТИ'}
             </button>
           </form>
 
           <p className="mt-6 text-center text-sm text-white/50">
-            Don't have an account?{' '}
+            Нет аккаунта?{' '}
             <Link to="/register" className="font-bold text-white hover:text-[#0075FF] transition-colors">
-              Sign up
+              Зарегистрироваться
             </Link>
           </p>
         </div>

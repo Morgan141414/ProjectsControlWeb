@@ -10,7 +10,7 @@ Uses Anthropic Claude Vision API to analyze screenshots and provide:
 
 import base64
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import httpx
@@ -138,7 +138,7 @@ Respond in JSON format:
                     result = json.loads(text)
 
                 # Add metadata
-                result["timestamp"] = datetime.utcnow().isoformat() + "Z"
+                result["timestamp"] = datetime.now(timezone.utc).isoformat() + "Z"
                 result["model"] = self.model
                 result["status"] = "success"
 
@@ -146,7 +146,7 @@ Respond in JSON format:
 
             except httpx.HTTPStatusError as e:
                 return {
-                    "timestamp": datetime.utcnow().isoformat() + "Z",
+                    "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
                     "status": "error",
                     "error": f"API error: {e.response.status_code}",
                     "application": "Unknown",
@@ -157,7 +157,7 @@ Respond in JSON format:
                 }
             except Exception as e:
                 return {
-                    "timestamp": datetime.utcnow().isoformat() + "Z",
+                    "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
                     "status": "error",
                     "error": str(e),
                     "application": "Unknown",

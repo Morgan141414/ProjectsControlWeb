@@ -27,18 +27,19 @@ export default function RegisterPage() {
       const { data: tokenData } = await login(email, password)
       const token = tokenData.access_token
 
-      localStorage.setItem(
+      // Write token to the appropriate storage so the API client can attach it
+      const storage = remember ? localStorage : sessionStorage
+      storage.setItem(
         'auth-storage',
         JSON.stringify({ state: { token }, version: 0 }),
       )
 
       const { data: user } = await getMe()
-      setAuth(token, user)
+      setAuth(token, user, remember ? 'local' : 'session')
 
-      if ((user as unknown as Record<string, unknown>).org_id) {
+      if (user.org_id) {
         try {
-          const orgId = (user as unknown as Record<string, unknown>).org_id as string
-          const { data: org } = await getOrg(orgId)
+          const { data: org } = await getOrg(user.org_id)
           setOrg(org.id, org.name)
         } catch {
           // org fetch failed
@@ -49,7 +50,7 @@ export default function RegisterPage() {
     } catch (err: unknown) {
       const message =
         (err as { response?: { data?: { detail?: string } } })?.response?.data
-          ?.detail ?? 'Registration failed'
+          ?.detail ?? 'Ошибка регистрации'
       toast.error(message)
     } finally {
       setLoading(false)
@@ -99,35 +100,17 @@ export default function RegisterPage() {
       {/* Right side - register form */}
       <div className="flex flex-1 items-center justify-center px-8">
         <div className="w-full max-w-md">
-          <h1 className="text-3xl font-bold text-white mb-2">Welcome!</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">Добро пожаловать!</h1>
           <p className="text-white/50 mb-8">
-            Use these awesome forms to login or create new account in your project for free.
+            Создайте аккаунт для работы с проектами
           </p>
-
-          {/* Social register */}
-          <div className="vision-card p-6 mb-6">
-            <p className="text-center text-sm font-bold text-white mb-4">Register with</p>
-            <div className="flex justify-center gap-3 mb-4">
-              {['facebook', 'apple', 'google'].map((provider) => (
-                <button
-                  key={provider}
-                  className="flex h-12 w-16 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/70 transition-colors hover:bg-white/10"
-                >
-                  <span className="text-lg font-bold">
-                    {provider === 'facebook' ? 'f' : provider === 'apple' ? '' : 'G'}
-                  </span>
-                </button>
-              ))}
-            </div>
-            <p className="text-center text-sm text-white/40">or</p>
-          </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-white mb-2">Name</label>
+              <label className="block text-sm font-medium text-white mb-2">Имя</label>
               <input
                 type="text"
-                placeholder="Your full name"
+                placeholder="Ваше полное имя"
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
@@ -139,7 +122,7 @@ export default function RegisterPage() {
               <label className="block text-sm font-medium text-white mb-2">Email</label>
               <input
                 type="email"
-                placeholder="Your email address"
+                placeholder="Ваш email адрес"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -148,10 +131,10 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white mb-2">Password</label>
+              <label className="block text-sm font-medium text-white mb-2">Пароль</label>
               <input
                 type="password"
-                placeholder="Min. 8 characters"
+                placeholder="Минимум 8 символов"
                 required
                 minLength={8}
                 value={password}
@@ -159,7 +142,7 @@ export default function RegisterPage() {
                 className="w-full h-12 rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder:text-white/30 focus:border-[#0075FF] focus:outline-none transition-colors"
               />
               {password.length > 0 && password.length < 8 && (
-                <p className="mt-1 text-xs text-[#E31A1A]">Password must be at least 8 characters</p>
+                <p className="mt-1 text-xs text-[#E31A1A]">Пароль должен содержать минимум 8 символов</p>
               )}
             </div>
 
@@ -174,7 +157,7 @@ export default function RegisterPage() {
                   className={`absolute top-1 left-1 h-4 w-4 rounded-full bg-white transition-transform ${remember ? 'translate-x-5' : ''}`}
                 />
               </button>
-              <span className="text-sm text-white/70">Remember me</span>
+              <span className="text-sm text-white/70">Запомнить меня</span>
             </div>
 
             <button
@@ -182,14 +165,14 @@ export default function RegisterPage() {
               disabled={loading}
               className="w-full h-12 rounded-xl bg-[#0075FF] text-sm font-bold text-white uppercase tracking-wider transition-all hover:bg-[#0063D6] hover:shadow-[0_0_20px_rgba(0,117,255,0.4)] disabled:opacity-50"
             >
-              {loading ? 'Signing up...' : 'SIGN UP'}
+              {loading ? 'Регистрация...' : 'ЗАРЕГИСТРИРОВАТЬСЯ'}
             </button>
           </form>
 
           <p className="mt-6 text-center text-sm text-white/50">
-            Already have an account?{' '}
+            Уже есть аккаунт?{' '}
             <Link to="/login" className="font-bold text-white hover:text-[#0075FF] transition-colors">
-              Sign in
+              Войти
             </Link>
           </p>
         </div>

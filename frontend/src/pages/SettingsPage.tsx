@@ -21,7 +21,7 @@ export default function SettingsPage() {
     setConsentLoading(true)
     getConsentStatus(orgId)
       .then((r) => setConsent(r.data))
-      .catch(() => toast.error('Failed to load consent status'))
+      .catch(() => toast.error('Не удалось загрузить статус согласия'))
       .finally(() => setConsentLoading(false))
   }, [orgId])
 
@@ -31,9 +31,9 @@ export default function SettingsPage() {
     try {
       await acceptConsent(orgId, 'v1')
       setConsent({ accepted: true })
-      toast.success('Consent accepted')
+      toast.success('Согласие принято')
     } catch {
-      toast.error('Failed to accept consent')
+      toast.error('Не удалось принять согласие')
     } finally {
       setConsentLoading(false)
     }
@@ -47,7 +47,7 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold text-white">Settings</h1>
+      <h1 className="text-2xl font-bold text-white">Настройки</h1>
 
       {/* Theme info */}
       <div className="vision-card p-6">
@@ -55,10 +55,10 @@ export default function SettingsPage() {
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0075FF]">
             <Bell className="h-5 w-5 text-white" />
           </div>
-          <h3 className="text-lg font-bold text-white">Appearance</h3>
+          <h3 className="text-lg font-bold text-white">Внешний вид</h3>
         </div>
         <p className="text-sm text-white/50">
-          Vision UI Dark Theme is active. This design uses a permanent dark mode for the best experience.
+          Активна тёмная тема Vision UI. Этот дизайн использует постоянный тёмный режим.
         </p>
       </div>
 
@@ -68,15 +68,15 @@ export default function SettingsPage() {
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#7551FF]">
             <Shield className="h-5 w-5 text-white" />
           </div>
-          <h3 className="text-lg font-bold text-white">Privacy Consent</h3>
+          <h3 className="text-lg font-bold text-white">Согласие на обработку данных</h3>
         </div>
         {!orgId ? (
-          <p className="text-sm text-white/40">Join an organization to manage consent.</p>
+          <p className="text-sm text-white/40">Присоединитесь к организации для управления согласием.</p>
         ) : consentLoading ? (
-          <p className="text-sm text-white/40">Loading...</p>
+          <p className="text-sm text-white/40">Загрузка...</p>
         ) : consent?.accepted ? (
           <div className="flex items-center gap-3">
-            <span className="rounded-xl bg-[#01B574]/20 px-4 py-1.5 text-sm font-bold text-[#01B574]">Accepted</span>
+            <span className="rounded-xl bg-[#01B574]/20 px-4 py-1.5 text-sm font-bold text-[#01B574]">Принято</span>
             {consent.accepted_at && (
               <span className="text-sm text-white/40">
                 {new Date(consent.accepted_at).toLocaleDateString()}
@@ -89,7 +89,7 @@ export default function SettingsPage() {
             disabled={consentLoading}
             className="rounded-xl bg-[#0075FF] px-6 py-2 text-sm font-bold text-white hover:bg-[#0063D6] disabled:opacity-50"
           >
-            Accept Consent
+            Принять согласие
           </button>
         )}
       </div>
@@ -100,14 +100,14 @@ export default function SettingsPage() {
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E31A1A]">
             <LogOut className="h-5 w-5 text-white" />
           </div>
-          <h3 className="text-lg font-bold text-white">Sign Out</h3>
+          <h3 className="text-lg font-bold text-white">Выход</h3>
         </div>
-        <p className="text-sm text-white/40 mb-4">You will be redirected to the login page.</p>
+        <p className="text-sm text-white/40 mb-4">Вы будете перенаправлены на страницу входа.</p>
         <button
           onClick={handleLogout}
           className="rounded-xl bg-[#E31A1A]/20 border border-[#E31A1A]/30 px-6 py-2 text-sm font-bold text-[#E31A1A] hover:bg-[#E31A1A]/30 transition-colors"
         >
-          Sign Out
+          Выйти
         </button>
       </div>
     </div>

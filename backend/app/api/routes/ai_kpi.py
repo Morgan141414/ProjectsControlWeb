@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session
 from app.api.routes.reports import compute_org_kpi_report
 from app.core.config import settings
 from app.core.deps import get_current_user, get_db, get_org_membership
+from app.core.metrics_utils import cap_delta
+from app.core.time import utc_now_naive
 from app.models.activity import ActivityEvent, ScreenSession
 from app.models.ai_score import AIScoreSnapshot
 from app.models.enums import ActivityType, OrgRole, ScorePeriod
@@ -81,14 +83,6 @@ def _iter_periods(start_date: date, end_date: date, period: ScorePeriod) -> list
     return periods
 
 
-def _cap_delta(delta_seconds: float) -> int:
-    if delta_seconds <= 0:
-        return 0
-    if delta_seconds > settings.METRICS_MAX_GAP_SECONDS:
-        return settings.METRICS_MAX_GAP_SECONDS
-    return int(delta_seconds)
-
-
 def _load_user_events(
     db: Session,
     org_id: str,
@@ -155,7 +149,7 @@ def _compute_driver_metrics(
     for index in range(len(events) - 1):
         current = events[index]
         next_event = events[index + 1]
-        delta = _cap_delta((next_event.captured_at - current.captured_at).total_seconds())
+        delta = cap_delta((next_event.captured_at - current.captured_at).total_seconds())
         if delta == 0:
             continue
         observed_seconds += delta
@@ -267,7 +261,7 @@ def _upsert_snapshot(
     snapshot.active_seconds = user_row.active_seconds
     snapshot.sessions_count = user_row.sessions_count
     snapshot.drivers_json = drivers_json
-    snapshot.generated_at = datetime.utcnow()
+    snapshot.generated_at = utc_now_naive()
 
     return snapshot
 
@@ -663,7 +657,7 @@ def ai_kpi(
         end_date=report.end_date,
         team_id=team_id,
         project_id=project_id,
-        generated_at=datetime.utcnow(),
+        generated_at=utc_now_naive(),
         org_score=org_score,
         users=user_scores,
         anomalies=anomalies,

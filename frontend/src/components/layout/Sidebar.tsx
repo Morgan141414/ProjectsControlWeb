@@ -6,22 +6,22 @@ import {
   BarChart3,
   Shield,
   Settings,
-  CreditCard,
-  Table2,
+  FileBarChart,
+  ShieldCheck,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/stores/uiStore'
 
 const mainNavItems = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/reports', label: 'Tables', icon: Table2 },
-  { to: '/admin', label: 'Billing', icon: CreditCard },
+  { to: '/dashboard', label: 'Дашборд', icon: LayoutDashboard },
+  { to: '/reports', label: 'Отчёты', icon: FileBarChart },
+  { to: '/admin', label: 'Админ', icon: ShieldCheck },
 ]
 
 const accountNavItems = [
-  { to: '/profile', label: 'Profile', icon: User },
-  { to: '/activity', label: 'Activity', icon: Activity },
-  { to: '/settings', label: 'Settings', icon: Settings },
+  { to: '/profile', label: 'Профиль', icon: User },
+  { to: '/activity', label: 'Активность', icon: Activity },
+  { to: '/settings', label: 'Настройки', icon: Settings },
 ]
 
 export function Sidebar() {
@@ -92,7 +92,7 @@ export function Sidebar() {
         {/* Account Pages Section */}
         {!collapsed && (
           <p className="mt-6 mb-3 px-4 text-xs font-bold uppercase tracking-wider text-white/40">
-            Account Pages
+            Аккаунт
           </p>
         )}
         {collapsed && <div className="my-4 h-px bg-white/10" />}
@@ -142,11 +142,16 @@ export function Sidebar() {
             <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
               <Shield className="h-5 w-5 text-white" />
             </div>
-            <p className="text-xs font-bold text-white">Need help?</p>
-            <p className="mt-1 text-[10px] text-white/70">Please check our docs</p>
-            <button className="mt-3 w-full rounded-xl bg-white/20 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-white/30">
-              DOCUMENTATION
-            </button>
+            <p className="text-xs font-bold text-white">Нужна помощь?</p>
+            <p className="mt-1 text-[10px] text-white/70">Ознакомьтесь с документацией</p>
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 block w-full rounded-xl bg-white/20 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-white/30"
+            >
+              ДОКУМЕНТАЦИЯ
+            </a>
           </div>
         </div>
       )}

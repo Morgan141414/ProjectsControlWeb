@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_current_user, get_db, get_org_membership, require_role
@@ -13,6 +13,8 @@ router = APIRouter(prefix="/orgs/{org_id}/audit", tags=["audit"])
 @router.get("", response_model=list[AuditLogResponse])
 def list_audit_logs(
     org_id: str,
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=50, ge=1, le=500),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> list[AuditLog]:
@@ -23,5 +25,7 @@ def list_audit_logs(
         db.query(AuditLog)
         .filter(AuditLog.org_id == org_id)
         .order_by(AuditLog.created_at.desc())
+        .offset(skip)
+        .limit(limit)
         .all()
     )
