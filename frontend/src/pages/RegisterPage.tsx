@@ -35,9 +35,9 @@ export default function RegisterPage() {
       const { data: user } = await getMe()
       setAuth(token, user)
 
-      if ((user as Record<string, unknown>).org_id) {
+      if ((user as unknown as Record<string, unknown>).org_id) {
         try {
-          const orgId = (user as Record<string, unknown>).org_id as string
+          const orgId = (user as unknown as Record<string, unknown>).org_id as string
           const { data: org } = await getOrg(orgId)
           setOrg(org.id, org.name)
         } catch {
@@ -151,12 +151,16 @@ export default function RegisterPage() {
               <label className="block text-sm font-medium text-white mb-2">Password</label>
               <input
                 type="password"
-                placeholder="Your password"
+                placeholder="Min. 8 characters"
                 required
+                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full h-12 rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder:text-white/30 focus:border-[#0075FF] focus:outline-none transition-colors"
               />
+              {password.length > 0 && password.length < 8 && (
+                <p className="mt-1 text-xs text-[#E31A1A]">Password must be at least 8 characters</p>
+              )}
             </div>
 
             {/* Remember me */}

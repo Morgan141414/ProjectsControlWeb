@@ -8,8 +8,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  LineChart,
-  Line,
 } from 'recharts'
 import type { Task, Project } from '@/types'
 import { getGreeting } from '@/lib/greeting'
@@ -24,8 +22,6 @@ import {
   Globe,
   FileText,
   ShoppingCart,
-  TrendingUp,
-  TrendingDown,
   CheckSquare,
   MoreHorizontal,
 } from 'lucide-react'

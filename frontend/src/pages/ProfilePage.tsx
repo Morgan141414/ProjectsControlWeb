@@ -3,7 +3,7 @@ import { toast } from 'sonner'
 import type { User } from '@/types'
 import { getMe, updateMe } from '@/api/profile'
 import { useAuthStore } from '@/stores/authStore'
-import { Mail, Phone, MapPin, Edit3, Save } from 'lucide-react'
+import { Mail, Edit3, Save } from 'lucide-react'
 
 export default function ProfilePage() {
   const setAuth = useAuthStore((s) => s.setAuth)

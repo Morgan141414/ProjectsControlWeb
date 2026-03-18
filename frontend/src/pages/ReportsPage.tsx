@@ -16,42 +16,71 @@ import { getActivityPerTask } from '@/api/performance'
 import { getSessionMetrics, getUserMetrics } from '@/api/metrics'
 import { getAiScorecards } from '@/api/ai'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
+import {
+  BarChart3,
+  FolderKanban,
+  Zap,
+  Activity,
+  FileDown,
+  Brain,
+  Download,
+  TrendingUp,
+  TrendingDown,
+  RefreshCw,
+} from 'lucide-react'
 
-/* ------------------------------------------------------------------ */
-/*  Helpers                                                           */
-/* ------------------------------------------------------------------ */
+/* ─── Shared ─── */
 
-function JsonBlock({ data }: { data: unknown }) {
+function VisionInput({
+  value,
+  onChange,
+  placeholder,
+  type = 'text',
+  ...rest
+}: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <pre className="mt-4 max-h-[500px] overflow-auto rounded-lg border bg-muted p-4 text-xs">
-      <code>{JSON.stringify(data, null, 2)}</code>
-    </pre>
+    <input
+      type={type}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      className="w-full h-10 rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder:text-white/30 focus:border-[#0075FF] focus:outline-none transition-colors"
+      {...rest}
+    />
   )
 }
 
-function LoadingSpinner() {
-  return <p className="py-4 text-sm text-muted-foreground">Загрузка...</p>
+function VisionSelect({
+  value,
+  onChange,
+  children,
+}: {
+  value: string
+  onChange: (val: string) => void
+  children: React.ReactNode
+}) {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="h-10 rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white focus:border-[#0075FF] focus:outline-none transition-colors"
+    >
+      {children}
+    </select>
+  )
 }
 
-function NoOrg() {
+function JsonBlock({ data }: { data: unknown }) {
   return (
-    <div className="flex min-h-[300px] items-center justify-center">
-      <p className="text-lg text-muted-foreground">Присоединитесь к организации</p>
+    <div className="mt-4 max-h-[500px] overflow-auto rounded-xl border border-white/10 bg-white/5 p-4">
+      <pre className="whitespace-pre-wrap text-xs text-white/70">
+        {JSON.stringify(data, null, 2)}
+      </pre>
     </div>
   )
 }
 
-/* ------------------------------------------------------------------ */
-/*  Tab 1 - KPI организации                                          */
-/* ------------------------------------------------------------------ */
+/* ─── Tab 1: KPI организации ─── */
 
 function OrgKpiTab({ orgId }: { orgId: string }) {
   const [startDate, setStartDate] = useState('')
@@ -97,62 +126,49 @@ function OrgKpiTab({ orgId }: { orgId: string }) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>KPI организации</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="space-y-1.5">
-            <Label>Дата начала</Label>
-            <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Дата окончания</Label>
-            <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>ID команды</Label>
-            <Input placeholder="team_id" value={teamId} onChange={(e) => setTeamId(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>ID проекта</Label>
-            <Input placeholder="project_id" value={projectId} onChange={(e) => setProjectId(e.target.value)} />
-          </div>
+    <div className="vision-card p-6">
+      <h3 className="text-lg font-bold text-white mb-4">KPI организации</h3>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-4">
+        <div>
+          <label className="block text-xs text-white/50 mb-1">Дата начала</label>
+          <VisionInput type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
         </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <Button onClick={handleLoad} disabled={loading}>
-            Загрузить
-          </Button>
-
-          <Separator orientation="vertical" className="h-8" />
-
-          <Select value={exportFormat} onValueChange={setExportFormat}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="csv">CSV</SelectItem>
-              <SelectItem value="json">JSON</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Button variant="outline" onClick={handleExport}>
-            Экспорт
-          </Button>
+        <div>
+          <label className="block text-xs text-white/50 mb-1">Дата окончания</label>
+          <VisionInput type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </div>
+        <div>
+          <label className="block text-xs text-white/50 mb-1">ID команды</label>
+          <VisionInput placeholder="team_id" value={teamId} onChange={(e) => setTeamId(e.target.value)} />
+        </div>
+        <div>
+          <label className="block text-xs text-white/50 mb-1">ID проекта</label>
+          <VisionInput placeholder="project_id" value={projectId} onChange={(e) => setProjectId(e.target.value)} />
+        </div>
+      </div>
 
-        {loading && <LoadingSpinner />}
-        {!loading && data != null && <JsonBlock data={data} />}
-      </CardContent>
-    </Card>
+      <div className="flex flex-wrap items-center gap-3">
+        <button onClick={handleLoad} disabled={loading} className="flex items-center gap-2 rounded-xl bg-[#0075FF] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#0063D6] disabled:opacity-50">
+          {loading ? 'Загрузка...' : 'Загрузить'}
+        </button>
+        <div className="h-8 w-px bg-white/10" />
+        <VisionSelect value={exportFormat} onChange={setExportFormat}>
+          <option value="csv" className="bg-[#111C44]">CSV</option>
+          <option value="json" className="bg-[#111C44]">JSON</option>
+        </VisionSelect>
+        <button onClick={handleExport} className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-bold text-white/70 hover:bg-white/10 hover:text-white">
+          <Download className="h-4 w-4" />
+          Экспорт
+        </button>
+      </div>
+
+      {loading && <p className="mt-4 text-sm text-white/40">Загрузка...</p>}
+      {!loading && data != null && <JsonBlock data={data} />}
+    </div>
   )
 }
 
-/* ------------------------------------------------------------------ */
-/*  Tab 2 - KPI проектов                                              */
-/* ------------------------------------------------------------------ */
+/* ─── Tab 2: KPI проектов ─── */
 
 function ProjectKpiTab({ orgId }: { orgId: string }) {
   const [startDate, setStartDate] = useState('')
@@ -192,54 +208,41 @@ function ProjectKpiTab({ orgId }: { orgId: string }) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>KPI проектов</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label>Дата начала</Label>
-            <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Дата окончания</Label>
-            <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-          </div>
+    <div className="vision-card p-6">
+      <h3 className="text-lg font-bold text-white mb-4">KPI проектов</h3>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 mb-4">
+        <div>
+          <label className="block text-xs text-white/50 mb-1">Дата начала</label>
+          <VisionInput type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
         </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <Button onClick={handleLoad} disabled={loading}>
-            Загрузить
-          </Button>
-
-          <Separator orientation="vertical" className="h-8" />
-
-          <Select value={exportFormat} onValueChange={setExportFormat}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="csv">CSV</SelectItem>
-              <SelectItem value="json">JSON</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Button variant="outline" onClick={handleExport}>
-            Экспорт
-          </Button>
+        <div>
+          <label className="block text-xs text-white/50 mb-1">Дата окончания</label>
+          <VisionInput type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </div>
+      </div>
 
-        {loading && <LoadingSpinner />}
-        {!loading && data != null && <JsonBlock data={data} />}
-      </CardContent>
-    </Card>
+      <div className="flex flex-wrap items-center gap-3">
+        <button onClick={handleLoad} disabled={loading} className="flex items-center gap-2 rounded-xl bg-[#0075FF] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#0063D6] disabled:opacity-50">
+          {loading ? 'Загрузка...' : 'Загрузить'}
+        </button>
+        <div className="h-8 w-px bg-white/10" />
+        <VisionSelect value={exportFormat} onChange={setExportFormat}>
+          <option value="csv" className="bg-[#111C44]">CSV</option>
+          <option value="json" className="bg-[#111C44]">JSON</option>
+        </VisionSelect>
+        <button onClick={handleExport} className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-bold text-white/70 hover:bg-white/10 hover:text-white">
+          <Download className="h-4 w-4" />
+          Экспорт
+        </button>
+      </div>
+
+      {loading && <p className="mt-4 text-sm text-white/40">Загрузка...</p>}
+      {!loading && data != null && <JsonBlock data={data} />}
+    </div>
   )
 }
 
-/* ------------------------------------------------------------------ */
-/*  Tab 3 - Продуктивность                                           */
-/* ------------------------------------------------------------------ */
+/* ─── Tab 3: Продуктивность ─── */
 
 function ProductivityTab({ orgId }: { orgId: string }) {
   const [userId, setUserId] = useState('')
@@ -270,56 +273,46 @@ function ProductivityTab({ orgId }: { orgId: string }) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Продуктивность</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="space-y-1.5">
-            <Label>ID пользователя</Label>
-            <Input placeholder="user_id" value={userId} onChange={(e) => setUserId(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>ID команды</Label>
-            <Input placeholder="team_id" value={teamId} onChange={(e) => setTeamId(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>ID проекта</Label>
-            <Input placeholder="project_id" value={projectId} onChange={(e) => setProjectId(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Дата начала</Label>
-            <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Дата окончания</Label>
-            <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-          </div>
+    <div className="vision-card p-6">
+      <h3 className="text-lg font-bold text-white mb-4">Продуктивность</h3>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 mb-4">
+        <div>
+          <label className="block text-xs text-white/50 mb-1">ID пользователя</label>
+          <VisionInput placeholder="user_id" value={userId} onChange={(e) => setUserId(e.target.value)} />
         </div>
-
-        <Button onClick={handleLoad} disabled={loading}>
-          Загрузить
-        </Button>
-
-        {loading && <LoadingSpinner />}
-        {!loading && data != null && <JsonBlock data={data} />}
-      </CardContent>
-    </Card>
+        <div>
+          <label className="block text-xs text-white/50 mb-1">ID команды</label>
+          <VisionInput placeholder="team_id" value={teamId} onChange={(e) => setTeamId(e.target.value)} />
+        </div>
+        <div>
+          <label className="block text-xs text-white/50 mb-1">ID проекта</label>
+          <VisionInput placeholder="project_id" value={projectId} onChange={(e) => setProjectId(e.target.value)} />
+        </div>
+        <div>
+          <label className="block text-xs text-white/50 mb-1">Дата начала</label>
+          <VisionInput type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        </div>
+        <div>
+          <label className="block text-xs text-white/50 mb-1">Дата окончания</label>
+          <VisionInput type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+        </div>
+      </div>
+      <button onClick={handleLoad} disabled={loading} className="flex items-center gap-2 rounded-xl bg-[#0075FF] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#0063D6] disabled:opacity-50">
+        {loading ? 'Загрузка...' : 'Загрузить'}
+      </button>
+      {loading && <p className="mt-4 text-sm text-white/40">Загрузка...</p>}
+      {!loading && data != null && <JsonBlock data={data} />}
+    </div>
   )
 }
 
-/* ------------------------------------------------------------------ */
-/*  Tab 4 - Метрики                                                   */
-/* ------------------------------------------------------------------ */
+/* ─── Tab 4: Метрики ─── */
 
 function MetricsTab({ orgId }: { orgId: string }) {
-  // Session metrics
   const [sessionId, setSessionId] = useState('')
   const [sessionData, setSessionData] = useState<unknown>(null)
   const [sessionLoading, setSessionLoading] = useState(false)
 
-  // User metrics
   const [umUserId, setUmUserId] = useState('')
   const [umProjectId, setUmProjectId] = useState('')
   const [umStartDate, setUmStartDate] = useState('')
@@ -366,67 +359,53 @@ function MetricsTab({ orgId }: { orgId: string }) {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Session metrics */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Метрики сессии</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-wrap items-end gap-4">
-            <div className="space-y-1.5">
-              <Label>ID сессии</Label>
-              <Input placeholder="session_id" value={sessionId} onChange={(e) => setSessionId(e.target.value)} />
-            </div>
-            <Button onClick={handleSessionLoad} disabled={sessionLoading}>
-              Загрузить
-            </Button>
+    <div className="space-y-5">
+      <div className="vision-card p-6">
+        <h3 className="text-lg font-bold text-white mb-4">Метрики сессии</h3>
+        <div className="flex flex-wrap items-end gap-3 mb-2">
+          <div>
+            <label className="block text-xs text-white/50 mb-1">ID сессии</label>
+            <VisionInput placeholder="session_id" value={sessionId} onChange={(e) => setSessionId(e.target.value)} />
           </div>
-          {sessionLoading && <LoadingSpinner />}
-          {!sessionLoading && sessionData != null && <JsonBlock data={sessionData} />}
-        </CardContent>
-      </Card>
+          <button onClick={handleSessionLoad} disabled={sessionLoading} className="h-10 rounded-xl bg-[#0075FF] px-5 text-sm font-bold text-white hover:bg-[#0063D6] disabled:opacity-50">
+            {sessionLoading ? 'Загрузка...' : 'Загрузить'}
+          </button>
+        </div>
+        {sessionLoading && <p className="text-sm text-white/40">Загрузка...</p>}
+        {!sessionLoading && sessionData != null && <JsonBlock data={sessionData} />}
+      </div>
 
-      {/* User metrics */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Метрики пользователя</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="space-y-1.5">
-              <Label>ID пользователя</Label>
-              <Input placeholder="user_id" value={umUserId} onChange={(e) => setUmUserId(e.target.value)} />
-            </div>
-            <div className="space-y-1.5">
-              <Label>ID проекта</Label>
-              <Input placeholder="project_id" value={umProjectId} onChange={(e) => setUmProjectId(e.target.value)} />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Дата начала</Label>
-              <Input type="date" value={umStartDate} onChange={(e) => setUmStartDate(e.target.value)} />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Дата окончания</Label>
-              <Input type="date" value={umEndDate} onChange={(e) => setUmEndDate(e.target.value)} />
-            </div>
+      <div className="vision-card p-6">
+        <h3 className="text-lg font-bold text-white mb-4">Метрики пользователя</h3>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-4">
+          <div>
+            <label className="block text-xs text-white/50 mb-1">ID пользователя</label>
+            <VisionInput placeholder="user_id" value={umUserId} onChange={(e) => setUmUserId(e.target.value)} />
           </div>
-
-          <Button onClick={handleUserLoad} disabled={userLoading}>
-            Загрузить
-          </Button>
-
-          {userLoading && <LoadingSpinner />}
-          {!userLoading && userData != null && <JsonBlock data={userData} />}
-        </CardContent>
-      </Card>
+          <div>
+            <label className="block text-xs text-white/50 mb-1">ID проекта</label>
+            <VisionInput placeholder="project_id" value={umProjectId} onChange={(e) => setUmProjectId(e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-xs text-white/50 mb-1">Дата начала</label>
+            <VisionInput type="date" value={umStartDate} onChange={(e) => setUmStartDate(e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-xs text-white/50 mb-1">Дата окончания</label>
+            <VisionInput type="date" value={umEndDate} onChange={(e) => setUmEndDate(e.target.value)} />
+          </div>
+        </div>
+        <button onClick={handleUserLoad} disabled={userLoading} className="flex items-center gap-2 rounded-xl bg-[#0075FF] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#0063D6] disabled:opacity-50">
+          {userLoading ? 'Загрузка...' : 'Загрузить'}
+        </button>
+        {userLoading && <p className="mt-4 text-sm text-white/40">Загрузка...</p>}
+        {!userLoading && userData != null && <JsonBlock data={userData} />}
+      </div>
     </div>
   )
 }
 
-/* ------------------------------------------------------------------ */
-/*  Tab 5 - Экспорты                                                  */
-/* ------------------------------------------------------------------ */
+/* ─── Tab 5: Экспорты ─── */
 
 function ExportsTab({ orgId }: { orgId: string }) {
   const [data, setData] = useState<unknown[]>([])
@@ -448,59 +427,56 @@ function ExportsTab({ orgId }: { orgId: string }) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Экспорты</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <Button onClick={handleRefresh} disabled={loading}>
+    <div className="vision-card p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-bold text-white">Экспорты</h3>
+        <button onClick={handleRefresh} disabled={loading} className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-white/70 hover:bg-white/10 disabled:opacity-50">
+          <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
           Обновить
-        </Button>
+        </button>
+      </div>
 
-        {loading && <LoadingSpinner />}
-        {!loading && loaded && (
-          Array.isArray(data) && data.length > 0 ? (
-            <div className="overflow-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b text-left">
-                    <th className="px-3 py-2 font-medium">ID</th>
-                    <th className="px-3 py-2 font-medium">Формат</th>
-                    <th className="px-3 py-2 font-medium">Статус</th>
-                    <th className="px-3 py-2 font-medium">Создано</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.map((item, idx) => {
-                    const row = item as Record<string, unknown>
-                    return (
-                      <tr key={String(row.id ?? idx)} className="border-b">
-                        <td className="px-3 py-2 font-mono text-xs">{String(row.id ?? '—')}</td>
-                        <td className="px-3 py-2">
-                          <Badge variant="secondary">{String(row.export_format ?? row.format ?? '—')}</Badge>
-                        </td>
-                        <td className="px-3 py-2">{String(row.status ?? '—')}</td>
-                        <td className="px-3 py-2 text-xs text-muted-foreground">
-                          {String(row.created_at ?? '—')}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">Нет экспортов</p>
-          )
-        )}
-      </CardContent>
-    </Card>
+      {loading && <p className="text-sm text-white/40">Загрузка...</p>}
+      {!loading && loaded && (
+        Array.isArray(data) && data.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-white/10 text-left">
+                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">ID</th>
+                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Формат</th>
+                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Статус</th>
+                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Создано</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((item, idx) => {
+                  const row = item as Record<string, unknown>
+                  return (
+                    <tr key={String(row.id ?? idx)} className="border-b border-white/5">
+                      <td className="px-4 py-3 font-mono text-xs text-white/60">{String(row.id ?? '—')}</td>
+                      <td className="px-4 py-3">
+                        <span className="rounded-xl bg-[#7551FF]/20 px-3 py-1 text-xs font-bold text-[#7551FF]">
+                          {String(row.export_format ?? row.format ?? '—')}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-white/70">{String(row.status ?? '—')}</td>
+                      <td className="px-4 py-3 text-xs text-white/50">{String(row.created_at ?? '—')}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="text-sm text-white/40">Нет экспортов</p>
+        )
+      )}
+    </div>
   )
 }
 
-/* ------------------------------------------------------------------ */
-/*  Tab 6 - AI Аналитика                                              */
-/* ------------------------------------------------------------------ */
+/* ─── Tab 6: AI Аналитика ─── */
 
 function AiAnalyticsTab({ orgId }: { orgId: string }) {
   const [period, setPeriod] = useState('day')
@@ -542,221 +518,218 @@ function AiAnalyticsTab({ orgId }: { orgId: string }) {
   const periodEnd = scorecard?.period_end ?? ''
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>AI Аналитика</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Controls */}
-        <div className="flex flex-wrap items-end gap-4">
-          {/* Period */}
-          <div className="space-y-1.5">
-            <Label>Период</Label>
+    <div className="space-y-5">
+      <div className="vision-card p-6">
+        <h3 className="text-lg font-bold text-white mb-4">AI Аналитика</h3>
+        <div className="flex flex-wrap items-end gap-4 mb-4">
+          <div>
+            <label className="block text-xs text-white/50 mb-1">Период</label>
             <div className="flex gap-1">
-              <Button size="sm" variant={period === 'day' ? 'default' : 'outline'} onClick={() => setPeriod('day')}>
+              <button
+                onClick={() => setPeriod('day')}
+                className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${period === 'day' ? 'bg-[#0075FF] text-white' : 'bg-white/5 text-white/50 hover:text-white'}`}
+              >
                 День
-              </Button>
-              <Button size="sm" variant={period === 'week' ? 'default' : 'outline'} onClick={() => setPeriod('week')}>
+              </button>
+              <button
+                onClick={() => setPeriod('week')}
+                className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${period === 'week' ? 'bg-[#0075FF] text-white' : 'bg-white/5 text-white/50 hover:text-white'}`}
+              >
                 Неделя
-              </Button>
+              </button>
             </div>
           </div>
-
-          {/* Mode */}
-          <div className="space-y-1.5">
-            <Label>Режим</Label>
+          <div>
+            <label className="block text-xs text-white/50 mb-1">Режим</label>
             <div className="flex gap-1">
-              <Button
-                size="sm"
-                variant={mode === 'employee' ? 'default' : 'outline'}
+              <button
                 onClick={() => setMode('employee')}
+                className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${mode === 'employee' ? 'bg-[#0075FF] text-white' : 'bg-white/5 text-white/50 hover:text-white'}`}
               >
                 Сотрудник
-              </Button>
-              <Button
-                size="sm"
-                variant={mode === 'executive' ? 'default' : 'outline'}
+              </button>
+              <button
                 onClick={() => setMode('executive')}
+                className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${mode === 'executive' ? 'bg-[#0075FF] text-white' : 'bg-white/5 text-white/50 hover:text-white'}`}
               >
                 Руководитель
-              </Button>
+              </button>
             </div>
           </div>
-
-          {/* Role */}
-          <div className="space-y-1.5">
-            <Label>Роль</Label>
-            <Select value={roleProfile} onValueChange={setRoleProfile}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="developer">Разработчик</SelectItem>
-                <SelectItem value="manager">Менеджер</SelectItem>
-                <SelectItem value="office">Офис</SelectItem>
-              </SelectContent>
-            </Select>
+          <div>
+            <label className="block text-xs text-white/50 mb-1">Роль</label>
+            <VisionSelect value={roleProfile} onChange={setRoleProfile}>
+              <option value="developer" className="bg-[#111C44]">Разработчик</option>
+              <option value="manager" className="bg-[#111C44]">Менеджер</option>
+              <option value="office" className="bg-[#111C44]">Офис</option>
+            </VisionSelect>
           </div>
-
-          {/* Date */}
-          <div className="space-y-1.5">
-            <Label>Дата (as_of)</Label>
-            <Input type="date" value={asOf} onChange={(e) => setAsOf(e.target.value)} />
+          <div>
+            <label className="block text-xs text-white/50 mb-1">Дата (as_of)</label>
+            <VisionInput type="date" value={asOf} onChange={(e) => setAsOf(e.target.value)} />
           </div>
-
-          {/* User ID */}
-          <div className="space-y-1.5">
-            <Label>ID пользователя</Label>
-            <Input placeholder="user_id (опционально)" value={userId} onChange={(e) => setUserId(e.target.value)} />
+          <div>
+            <label className="block text-xs text-white/50 mb-1">ID пользователя</label>
+            <VisionInput placeholder="user_id (опционально)" value={userId} onChange={(e) => setUserId(e.target.value)} />
           </div>
         </div>
+        <button onClick={handleLoad} disabled={loading} className="flex items-center gap-2 rounded-xl bg-[#0075FF] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#0063D6] disabled:opacity-50">
+          <Brain className="h-4 w-4" />
+          {loading ? 'Загрузка...' : 'Загрузить'}
+        </button>
+      </div>
 
-        <Button onClick={handleLoad} disabled={loading}>
-          Загрузить
-        </Button>
+      {loading && <p className="text-sm text-white/40 px-6">Загрузка...</p>}
 
-        {loading && <LoadingSpinner />}
-
-        {/* Results */}
-        {!loading && scorecard != null && (
-          <div className="space-y-6">
-            {/* Header */}
-            <div>
-              <h3 className="text-lg font-semibold">{String(userName)}</h3>
-              <p className="text-sm text-muted-foreground">
-                {String(periodStart)} &mdash; {String(periodEnd)}
-              </p>
+      {!loading && scorecard != null && (
+        <>
+          {/* Score Summary */}
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+            <div className="vision-card p-6 text-center">
+              <p className="text-xs text-white/40 uppercase mb-2">Текущий балл</p>
+              <p className="text-4xl font-bold text-white">{score.toFixed(1)}</p>
+              <p className="text-xs text-white/40 mt-1">{String(userName)}</p>
             </div>
-
-            <Separator />
-
-            {/* Score card */}
-            <div className="flex items-baseline gap-6">
-              <div>
-                <p className="text-xs uppercase text-muted-foreground">Текущий балл</p>
-                <p className="text-5xl font-bold tabular-nums">{score.toFixed(1)}</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase text-muted-foreground">Базовый</p>
-                <p className="text-xl tabular-nums">{baseline.toFixed(1)}</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase text-muted-foreground">Дельта</p>
-                <p className={`text-xl font-semibold tabular-nums ${delta >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {delta >= 0 ? '+' : ''}
-                  {delta.toFixed(1)}%
+            <div className="vision-card p-6 text-center">
+              <p className="text-xs text-white/40 uppercase mb-2">Базовый</p>
+              <p className="text-4xl font-bold text-white/70">{baseline.toFixed(1)}</p>
+              <p className="text-xs text-white/40 mt-1">{String(periodStart)} — {String(periodEnd)}</p>
+            </div>
+            <div className="vision-card p-6 text-center">
+              <p className="text-xs text-white/40 uppercase mb-2">Дельта</p>
+              <div className="flex items-center justify-center gap-2">
+                {delta >= 0 ? (
+                  <TrendingUp className="h-5 w-5 text-[#01B574]" />
+                ) : (
+                  <TrendingDown className="h-5 w-5 text-[#E31A1A]" />
+                )}
+                <p className={`text-4xl font-bold ${delta >= 0 ? 'text-[#01B574]' : 'text-[#E31A1A]'}`}>
+                  {delta >= 0 ? '+' : ''}{delta.toFixed(1)}%
                 </p>
               </div>
             </div>
+          </div>
 
-            <Separator />
-
-            {/* Trend chart */}
-            {trend.length > 0 && (
-              <div>
-                <h4 className="mb-2 font-medium">Тренд</h4>
-                <ResponsiveContainer width="100%" height={300}>
+          {/* Trend Chart */}
+          {trend.length > 0 && (
+            <div className="vision-card p-6">
+              <h4 className="text-lg font-bold text-white mb-4">Тренд</h4>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={trend}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="period_start" tick={{ fontSize: 12 }} />
-                    <YAxis tick={{ fontSize: 12 }} />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                    <XAxis dataKey="period_start" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} />
+                    <Tooltip contentStyle={{ background: '#111C44', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, color: 'white' }} />
+                    <Line type="monotone" dataKey="score" stroke="#0075FF" strokeWidth={2} dot={false} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Primary drivers */}
-            {primaryDrivers.length > 0 && (
-              <div>
-                <h4 className="mb-2 font-medium">Ключевые факторы</h4>
-                <ul className="space-y-1">
-                  {primaryDrivers.map((driver, idx) => (
-                    <li key={idx} className="flex items-center gap-2 text-sm">
-                      <Badge variant="outline">
-                        {Number(driver.impact ?? 0) >= 0 ? '+' : ''}
-                        {Number(driver.impact ?? 0).toFixed(1)}%
-                      </Badge>
-                      <span>{String(driver.name ?? driver.label ?? driver.factor ?? '—')}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Interpretation / Summary */}
-            {interpretation != null && (
-              <div>
-                <h4 className="mb-2 font-medium">Интерпретация</h4>
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  {Object.entries(interpretation).map(([key, value]) => (
-                    <div key={key}>
-                      <p className="font-medium text-foreground">{key}</p>
-                      <p>{String(value)}</p>
+          {/* Drivers */}
+          {primaryDrivers.length > 0 && (
+            <div className="vision-card p-6">
+              <h4 className="text-lg font-bold text-white mb-4">Ключевые факторы</h4>
+              <div className="space-y-2">
+                {primaryDrivers.map((driver, idx) => {
+                  const impact = Number(driver.impact ?? 0)
+                  return (
+                    <div key={idx} className="flex items-center gap-3 rounded-xl bg-white/5 px-4 py-3">
+                      <span className={`rounded-lg px-3 py-1 text-xs font-bold ${impact >= 0 ? 'bg-[#01B574]/20 text-[#01B574]' : 'bg-[#E31A1A]/20 text-[#E31A1A]'}`}>
+                        {impact >= 0 ? '+' : ''}{impact.toFixed(1)}%
+                      </span>
+                      <span className="text-sm text-white">{String(driver.name ?? driver.label ?? driver.factor ?? '—')}</span>
                     </div>
-                  ))}
-                </div>
+                  )
+                })}
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
 
-        {!loading && data != null && data.length === 0 && (
-          <p className="text-sm text-muted-foreground">Нет данных</p>
-        )}
-      </CardContent>
-    </Card>
+          {/* Interpretation */}
+          {interpretation != null && (
+            <div className="vision-card p-6">
+              <h4 className="text-lg font-bold text-white mb-4">Интерпретация</h4>
+              <div className="space-y-3">
+                {Object.entries(interpretation).map(([key, value]) => (
+                  <div key={key} className="rounded-xl bg-white/5 px-4 py-3">
+                    <p className="text-sm font-bold text-white mb-1">{key}</p>
+                    <p className="text-sm text-white/60">{String(value)}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {!loading && data != null && data.length === 0 && (
+        <p className="text-sm text-white/40">Нет данных</p>
+      )}
+    </div>
   )
 }
 
-/* ------------------------------------------------------------------ */
-/*  Main page                                                         */
-/* ------------------------------------------------------------------ */
+/* ─── Tab Config ─── */
+
+const reportTabs = [
+  { id: 0, label: 'KPI организации', icon: BarChart3 },
+  { id: 1, label: 'KPI проектов', icon: FolderKanban },
+  { id: 2, label: 'Продуктивность', icon: Zap },
+  { id: 3, label: 'Метрики', icon: Activity },
+  { id: 4, label: 'Экспорты', icon: FileDown },
+  { id: 5, label: 'AI Аналитика', icon: Brain },
+]
+
+/* ─── Main ReportsPage ─── */
 
 export default function ReportsPage() {
   const orgId = useOrgStore((s) => s.orgId)
+  const [activeTab, setActiveTab] = useState(0)
 
-  if (!orgId) return <NoOrg />
+  if (!orgId) {
+    return (
+      <div className="flex min-h-[300px] items-center justify-center">
+        <p className="text-white/40">Присоединитесь к организации</p>
+      </div>
+    )
+  }
 
   return (
-    <div className="container mx-auto space-y-6 py-6">
-      <h1 className="text-2xl font-bold">Отчёты</h1>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-white">Отчёты</h1>
 
-      <Tabs defaultValue={0}>
-        <TabsList className="flex-wrap">
-          <TabsTrigger value={0}>KPI организации</TabsTrigger>
-          <TabsTrigger value={1}>KPI проектов</TabsTrigger>
-          <TabsTrigger value={2}>Продуктивность</TabsTrigger>
-          <TabsTrigger value={3}>Метрики</TabsTrigger>
-          <TabsTrigger value={4}>Экспорты</TabsTrigger>
-          <TabsTrigger value={5}>AI Аналитика</TabsTrigger>
-        </TabsList>
+      {/* Tab buttons */}
+      <div className="flex flex-wrap gap-2">
+        {reportTabs.map((tab) => {
+          const Icon = tab.icon
+          const isActive = activeTab === tab.id
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition-all ${
+                isActive
+                  ? 'bg-[#0075FF] text-white shadow-[0_0_15px_rgba(0,117,255,0.3)]'
+                  : 'bg-white/5 text-white/50 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {tab.label}
+            </button>
+          )
+        })}
+      </div>
 
-        <TabsContent value={0}>
-          <OrgKpiTab orgId={orgId} />
-        </TabsContent>
-
-        <TabsContent value={1}>
-          <ProjectKpiTab orgId={orgId} />
-        </TabsContent>
-
-        <TabsContent value={2}>
-          <ProductivityTab orgId={orgId} />
-        </TabsContent>
-
-        <TabsContent value={3}>
-          <MetricsTab orgId={orgId} />
-        </TabsContent>
-
-        <TabsContent value={4}>
-          <ExportsTab orgId={orgId} />
-        </TabsContent>
-
-        <TabsContent value={5}>
-          <AiAnalyticsTab orgId={orgId} />
-        </TabsContent>
-      </Tabs>
+      {/* Tab content */}
+      {activeTab === 0 && <OrgKpiTab orgId={orgId} />}
+      {activeTab === 1 && <ProjectKpiTab orgId={orgId} />}
+      {activeTab === 2 && <ProductivityTab orgId={orgId} />}
+      {activeTab === 3 && <MetricsTab orgId={orgId} />}
+      {activeTab === 4 && <ExportsTab orgId={orgId} />}
+      {activeTab === 5 && <AiAnalyticsTab orgId={orgId} />}
     </div>
   )
 }

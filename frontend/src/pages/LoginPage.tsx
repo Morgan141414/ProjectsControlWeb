@@ -33,9 +33,9 @@ export default function LoginPage() {
       const { data: user } = await getMe()
       setAuth(token, user)
 
-      if ((user as Record<string, unknown>).org_id) {
+      if ((user as unknown as Record<string, unknown>).org_id) {
         try {
-          const orgId = (user as Record<string, unknown>).org_id as string
+          const orgId = (user as unknown as Record<string, unknown>).org_id as string
           const { data: org } = await getOrg(orgId)
           setOrg(org.id, org.name)
         } catch {
