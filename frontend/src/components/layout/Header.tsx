@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router'
-import { Search, Bell, Settings, User } from 'lucide-react'
+import { Search, Bell, Settings, User, Inbox } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 
 const pageTitles: Record<string, { breadcrumb: string; title: string }> = {
@@ -19,6 +19,7 @@ export function Header() {
   const page = pageTitles[location.pathname] ?? { breadcrumb: 'Страницы', title: '' }
 
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchFocused, setSearchFocused] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const bellRef = useRef<HTMLButtonElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -38,41 +39,83 @@ export function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  const initials = fullName
+    ? fullName
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
+    : 'U'
+
   return (
-    <header className="flex items-center justify-between px-6 py-4">
+    <header
+      className="relative z-10 flex items-center justify-between px-6 py-4"
+      style={{
+        background: 'linear-gradient(180deg, rgba(6,11,38,0.8) 0%, rgba(6,11,38,0.4) 60%, transparent 100%)',
+        backdropFilter: 'blur(12px)',
+      }}
+    >
       {/* Left: breadcrumb + title */}
-      <div>
-        <p className="text-xs text-white/50">{page.breadcrumb}</p>
-        <h1 className="text-sm font-bold text-white">{page.title}</h1>
+      <div className="min-w-0">
+        <p className="flex items-center gap-1.5 text-xs text-white/35 transition-colors">
+          {page.breadcrumb.split(' / ').map((part, i, arr) => (
+            <span key={part} className="flex items-center gap-1.5">
+              {i > 0 && (
+                <span className="text-white/20">/</span>
+              )}
+              <span className={i === arr.length - 1 ? 'text-white/50' : ''}>
+                {part}
+              </span>
+            </span>
+          ))}
+        </p>
+        <h1 className="mt-0.5 text-sm font-bold tracking-wide text-white">{page.title}</h1>
       </div>
 
       {/* Right: search + icons + user */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         {/* Search */}
         <div className="relative hidden md:block">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
+          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/30 transition-colors duration-300" />
           <input
             type="text"
             placeholder="Поиск..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-10 w-56 rounded-xl border border-white/10 bg-white/5 pl-10 pr-4 text-sm text-white placeholder:text-white/30 focus:border-[#0075FF] focus:outline-none transition-colors"
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
+            className={`h-9 rounded-xl border bg-white/[0.04] pl-9 pr-4 text-xs text-white placeholder:text-white/25 transition-all duration-400 ease-out focus:outline-none ${
+              searchFocused
+                ? 'w-64 border-[#0075FF]/50 bg-white/[0.07] shadow-[0_0_20px_rgba(0,117,255,0.12)]'
+                : 'w-44 border-white/[0.06] hover:border-white/10'
+            }`}
           />
         </div>
 
-        {/* User name */}
-        <button className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white">
-          <User className="h-4 w-4" />
-          <span className="hidden sm:inline">{fullName ?? 'Пользователь'}</span>
+        {/* User avatar */}
+        <button className="group flex items-center gap-2.5 rounded-xl px-2 py-1.5 transition-all duration-300 hover:bg-white/[0.04]">
+          <div
+            className="flex h-8 w-8 items-center justify-center rounded-full text-[11px] font-bold text-white shadow-lg transition-all duration-300 group-hover:shadow-[0_0_16px_rgba(0,117,255,0.3)]"
+            style={{
+              background: 'linear-gradient(135deg, #0075FF 0%, #7551FF 100%)',
+            }}
+          >
+            {initials}
+          </div>
+          <span className="hidden text-xs font-medium text-white/60 transition-colors duration-300 group-hover:text-white/90 sm:inline">
+            {fullName ?? 'Пользователь'}
+          </span>
         </button>
 
         {/* Settings */}
         <button
           onClick={() => navigate('/settings')}
-          className="rounded-xl p-2 text-white/50 transition-colors hover:text-white"
+          className="group relative rounded-xl p-2 text-white/40 transition-all duration-300 hover:text-white"
           title="Настройки"
         >
-          <Settings className="h-4 w-4" />
+          <div className="absolute inset-0 rounded-xl bg-white/0 transition-all duration-300 group-hover:bg-white/[0.06] group-hover:shadow-[0_0_12px_rgba(255,255,255,0.04)]" />
+          <Settings className="relative h-4 w-4 transition-transform duration-500 group-hover:rotate-90" />
         </button>
 
         {/* Notifications */}
@@ -80,21 +123,40 @@ export function Header() {
           <button
             ref={bellRef}
             onClick={() => setShowNotifications((v) => !v)}
-            className="rounded-xl p-2 text-white/50 transition-colors hover:text-white"
+            className="group relative rounded-xl p-2 text-white/40 transition-all duration-300 hover:text-white"
             title="Уведомления"
           >
-            <Bell className="h-4 w-4" />
+            <div className="absolute inset-0 rounded-xl bg-white/0 transition-all duration-300 group-hover:bg-white/[0.06] group-hover:shadow-[0_0_12px_rgba(255,255,255,0.04)]" />
+            <Bell className="relative h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
           </button>
+
+          {/* Notifications dropdown */}
           {showNotifications && (
             <div
               ref={dropdownRef}
-              className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-white/10 p-4 z-50"
+              className="notification-dropdown absolute right-0 top-full mt-2 w-72 overflow-hidden rounded-2xl border border-white/[0.08] p-1 z-50 shadow-2xl"
               style={{
-                background: 'linear-gradient(127.09deg, rgba(6, 11, 40, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%)',
-                backdropFilter: 'blur(120px)',
+                background: 'linear-gradient(135deg, rgba(11,20,55,0.97) 0%, rgba(6,11,38,0.95) 100%)',
+                backdropFilter: 'blur(40px)',
               }}
             >
-              <p className="text-sm text-white/50 text-center">Нет уведомлений</p>
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 pt-3 pb-2">
+                <span className="text-xs font-bold tracking-wide text-white/70">Уведомления</span>
+                <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] font-medium text-white/30">
+                  0
+                </span>
+              </div>
+
+              <div className="mx-3 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+
+              {/* Empty state */}
+              <div className="flex flex-col items-center gap-2 px-4 py-8">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/[0.04]">
+                  <Inbox className="h-5 w-5 text-white/20" />
+                </div>
+                <p className="text-xs text-white/30">Нет уведомлений</p>
+              </div>
             </div>
           )}
         </div>

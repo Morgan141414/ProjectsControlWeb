@@ -8,44 +8,58 @@ import {
   listOrgSessions,
 } from '@/api/sessions'
 import type { Session } from '@/types'
-import { Play, Square, Monitor, Cpu, Clock, Users } from 'lucide-react'
+import { Play, Square, Monitor, Cpu, Clock, Users, Wifi, WifiOff } from 'lucide-react'
 
 function formatDate(iso?: string) {
-  if (!iso) return '—'
+  if (!iso) return '\u2014'
   return new Date(iso).toLocaleString('ru-RU')
 }
 
 function SessionTable({ sessions }: { sessions: Session[] }) {
   if (sessions.length === 0) {
-    return <p className="text-sm text-white/40 py-4">Нет сессий.</p>
+    return (
+      <div className="flex flex-col items-center justify-center py-12 gap-3">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5">
+          <Clock className="h-6 w-6 text-white/20" />
+        </div>
+        <p className="text-sm text-white/30 font-medium">{'\u041D\u0435\u0442 \u0441\u0435\u0441\u0441\u0438\u0439'}</p>
+      </div>
+    )
   }
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-white/10 text-left">
-            <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">ID</th>
-            <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Начало</th>
-            <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Конец</th>
-            <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Статус</th>
+            <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">ID</th>
+            <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u041D\u0430\u0447\u0430\u043B\u043E'}</th>
+            <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u041A\u043E\u043D\u0435\u0446'}</th>
+            <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u0421\u0442\u0430\u0442\u0443\u0441'}</th>
           </tr>
         </thead>
         <tbody>
-          {sessions.map((s) => (
-            <tr key={s.id} className="border-b border-white/5">
-              <td className="px-4 py-3 font-mono text-xs text-white/60">{s.id}</td>
-              <td className="px-4 py-3 text-white/70">{formatDate(s.started_at)}</td>
-              <td className="px-4 py-3 text-white/70">{formatDate(s.ended_at)}</td>
-              <td className="px-4 py-3">
-                <span
-                  className={`rounded-xl px-3 py-1 text-xs font-bold ${
-                    s.ended_at
-                      ? 'bg-white/10 text-white/50'
-                      : 'bg-[#01B574]/20 text-[#01B574]'
-                  }`}
-                >
-                  {s.ended_at ? 'Завершена' : 'Активна'}
-                </span>
+          {sessions.map((s, idx) => (
+            <tr
+              key={s.id}
+              className={`border-b border-white/5 transition-colors duration-200 hover:bg-white/[0.03] ${
+                idx % 2 === 1 ? 'bg-white/[0.02]' : ''
+              }`}
+            >
+              <td className="px-4 py-3.5 font-mono text-xs text-white/50">{s.id}</td>
+              <td className="px-4 py-3.5 text-white/70 text-sm">{formatDate(s.started_at)}</td>
+              <td className="px-4 py-3.5 text-white/70 text-sm">{formatDate(s.ended_at)}</td>
+              <td className="px-4 py-3.5">
+                {s.ended_at ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.06] px-3 py-1 text-xs font-semibold text-white/40">
+                    <WifiOff className="h-3 w-3" />
+                    {'\u0417\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0430'}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#01B574]/15 px-3 py-1 text-xs font-semibold text-[#01B574]">
+                    <Wifi className="h-3 w-3" />
+                    {'\u0410\u043A\u0442\u0438\u0432\u043D\u0430'}
+                  </span>
+                )}
               </td>
             </tr>
           ))}
@@ -79,7 +93,7 @@ export default function ActivityPage() {
       const r = await listMySessions(orgId)
       setMySessions(r.data)
     } catch {
-      toast.error('Не удалось загрузить мои сессии')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u043C\u043E\u0438 \u0441\u0435\u0441\u0441\u0438\u0438')
     } finally {
       setLoadingMy(false)
     }
@@ -92,7 +106,7 @@ export default function ActivityPage() {
       const r = await listOrgSessions(orgId)
       setOrgSessions(r.data)
     } catch {
-      toast.error('Не удалось загрузить сессии организации')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u0441\u0435\u0441\u0441\u0438\u0438 \u043E\u0440\u0433\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u0438')
     } finally {
       setLoadingOrg(false)
     }
@@ -112,10 +126,10 @@ export default function ActivityPage() {
     try {
       const r = await startSession(orgId, deviceName, osName)
       setActiveSessionId(r.data.id)
-      toast.success('Сессия начата')
+      toast.success('\u0421\u0435\u0441\u0441\u0438\u044F \u043D\u0430\u0447\u0430\u0442\u0430')
       loadMySessions()
     } catch {
-      toast.error('Не удалось начать сессию')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u043D\u0430\u0447\u0430\u0442\u044C \u0441\u0435\u0441\u0441\u0438\u044E')
     } finally {
       setStarting(false)
     }
@@ -127,10 +141,10 @@ export default function ActivityPage() {
     try {
       await stopSession(orgId, activeSessionId)
       setActiveSessionId(null)
-      toast.success('Сессия завершена')
+      toast.success('\u0421\u0435\u0441\u0441\u0438\u044F \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0430')
       loadMySessions()
     } catch {
-      toast.error('Не удалось завершить сессию')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0437\u0430\u0432\u0435\u0440\u0448\u0438\u0442\u044C \u0441\u0435\u0441\u0441\u0438\u044E')
     } finally {
       setStopping(false)
     }
@@ -139,126 +153,169 @@ export default function ActivityPage() {
   if (!orgId) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <p className="text-white/40">
-          Присоединитесь к организации, чтобы отслеживать активность.
-        </p>
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5">
+            <Clock className="h-7 w-7 text-white/20" />
+          </div>
+          <p className="text-white/40 text-sm">
+            {'\u041F\u0440\u0438\u0441\u043E\u0435\u0434\u0438\u043D\u0438\u0442\u0435\u0441\u044C \u043A \u043E\u0440\u0433\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u0438, \u0447\u0442\u043E\u0431\u044B \u043E\u0442\u0441\u043B\u0435\u0436\u0438\u0432\u0430\u0442\u044C \u0430\u043A\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u044C.'}
+          </p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      {/* Session Management */}
-      <div className="vision-card p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0075FF]">
-            <Clock className="h-5 w-5 text-white" />
-          </div>
-          <h3 className="text-lg font-bold text-white">Управление сессией</h3>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-6">
-          <div>
-            <label className="block text-xs text-white/50 mb-2">
-              <Monitor className="inline h-3 w-3 mr-1" />
-              Устройство
-            </label>
-            <input
-              value={deviceName}
-              onChange={(e) => setDeviceName(e.target.value)}
-              placeholder="Имя устройства"
-              className="w-full h-10 rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder:text-white/30 focus:border-[#0075FF] focus:outline-none"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-white/50 mb-2">
-              <Cpu className="inline h-3 w-3 mr-1" />
-              ОС
-            </label>
-            <input
-              value={osName}
-              onChange={(e) => setOsName(e.target.value)}
-              placeholder="Операционная система"
-              className="w-full h-10 rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder:text-white/30 focus:border-[#0075FF] focus:outline-none"
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleStart}
-            disabled={starting || !!activeSessionId}
-            className="flex items-center gap-2 rounded-xl bg-[#01B574] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#01A066] disabled:opacity-50 transition-colors"
-          >
-            <Play className="h-4 w-4" />
-            {starting ? 'Запуск...' : 'Начать сессию'}
-          </button>
-          <button
-            onClick={handleStop}
-            disabled={stopping || !activeSessionId}
-            className="flex items-center gap-2 rounded-xl bg-[#E31A1A]/20 border border-[#E31A1A]/30 px-6 py-2.5 text-sm font-bold text-[#E31A1A] hover:bg-[#E31A1A]/30 disabled:opacity-50 transition-colors"
-          >
-            <Square className="h-4 w-4" />
-            {stopping ? 'Завершение...' : 'Завершить сессию'}
-          </button>
-        </div>
-
+    <div className="page-enter space-y-6">
+      {/* Page Title */}
+      <div className="flex items-center gap-4">
+        <h1 className="gradient-text text-3xl font-extrabold tracking-tight">
+          {'\u0410\u043A\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u044C'}
+        </h1>
         {activeSessionId && (
-          <div className="mt-4 flex items-center gap-2 rounded-xl bg-[#01B574]/10 border border-[#01B574]/20 px-4 py-2">
-            <div className="h-2 w-2 rounded-full bg-[#01B574] animate-pulse" />
-            <span className="text-sm text-white/70">Текущая сессия:</span>
-            <span className="font-mono text-xs text-[#01B574]">{activeSessionId}</span>
-          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#01B574]/10 border border-[#01B574]/20 px-3 py-1 text-xs font-medium text-[#01B574]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#01B574] animate-pulse" />
+            {'\u0410\u043A\u0442\u0438\u0432\u043D\u0430\u044F \u0441\u0435\u0441\u0441\u0438\u044F'}
+          </span>
         )}
       </div>
 
-      {/* Tabs */}
+      {/* Session Management Card */}
+      <div className="vision-card p-6 relative overflow-hidden">
+        {/* Decorative orb */}
+        <div className="pointer-events-none absolute -top-20 -right-20 h-40 w-40 rounded-full bg-[#0075FF]/10 blur-3xl" style={{ animation: 'orbFloat1 8s ease-in-out infinite' }} />
+
+        <div className="relative">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#0075FF] to-[#2563EB] shadow-[0_0_20px_rgba(0,117,255,0.3)]">
+              <Clock className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white">{'\u0423\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0441\u0435\u0441\u0441\u0438\u0435\u0439'}</h3>
+              <p className="text-xs text-white/30">{'\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432\u0430 \u0438 \u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0441\u0435\u0430\u043D\u0441\u0430\u043C\u0438'}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-6">
+            <div>
+              <label className="flex items-center gap-1.5 text-xs font-medium text-white/40 mb-2 uppercase tracking-wider">
+                <Monitor className="h-3 w-3" />
+                {'\u0423\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432\u043E'}
+              </label>
+              <input
+                value={deviceName}
+                onChange={(e) => setDeviceName(e.target.value)}
+                placeholder={'\u0418\u043C\u044F \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432\u0430'}
+                className="vision-input w-full h-10 px-4 text-sm text-white placeholder:text-white/20 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="flex items-center gap-1.5 text-xs font-medium text-white/40 mb-2 uppercase tracking-wider">
+                <Cpu className="h-3 w-3" />
+                {'\u041E\u043F\u0435\u0440\u0430\u0446\u0438\u043E\u043D\u043D\u0430\u044F \u0441\u0438\u0441\u0442\u0435\u043C\u0430'}
+              </label>
+              <input
+                value={osName}
+                onChange={(e) => setOsName(e.target.value)}
+                placeholder={'\u041E\u043F\u0435\u0440\u0430\u0446\u0438\u043E\u043D\u043D\u0430\u044F \u0441\u0438\u0441\u0442\u0435\u043C\u0430'}
+                className="vision-input w-full h-10 px-4 text-sm text-white placeholder:text-white/20 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleStart}
+              disabled={starting || !!activeSessionId}
+              className="btn-primary flex items-center gap-2 rounded-xl px-6 py-2.5 text-sm font-bold text-white disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <Play className="h-4 w-4" />
+              {starting ? '\u0417\u0430\u043F\u0443\u0441\u043A...' : '\u041D\u0430\u0447\u0430\u0442\u044C \u0441\u0435\u0441\u0441\u0438\u044E'}
+            </button>
+            <button
+              onClick={handleStop}
+              disabled={stopping || !activeSessionId}
+              className="flex items-center gap-2 rounded-xl bg-[#E31A1A]/10 border border-[#E31A1A]/20 px-6 py-2.5 text-sm font-bold text-[#E31A1A] hover:bg-[#E31A1A]/20 hover:border-[#E31A1A]/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
+            >
+              <Square className="h-4 w-4" />
+              {stopping ? '\u0417\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0438\u0435...' : '\u0417\u0430\u0432\u0435\u0440\u0448\u0438\u0442\u044C \u0441\u0435\u0441\u0441\u0438\u044E'}
+            </button>
+          </div>
+
+          {activeSessionId && (
+            <div className="mt-5 flex items-center gap-3 rounded-2xl bg-[#01B574]/5 border border-[#01B574]/15 px-5 py-3" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
+              <div className="h-2.5 w-2.5 rounded-full bg-[#01B574] animate-pulse shadow-[0_0_8px_rgba(1,181,116,0.5)]" />
+              <span className="text-sm text-white/60">{'\u0422\u0435\u043A\u0443\u0449\u0430\u044F \u0441\u0435\u0441\u0441\u0438\u044F:'}</span>
+              <span className="font-mono text-xs text-[#01B574] bg-[#01B574]/10 rounded-lg px-2.5 py-1">{activeSessionId}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Sessions List Card */}
       <div className="vision-card p-6">
-        <div className="flex gap-2 mb-6">
+        {/* Tab Pills */}
+        <div className="flex gap-2 mb-6 p-1 rounded-2xl bg-white/[0.03] w-fit">
           <button
             onClick={() => setActiveTab(0)}
-            className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all ${
+            className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all duration-300 ${
               activeTab === 0
-                ? 'bg-[#0075FF] text-white shadow-[0_0_15px_rgba(0,117,255,0.3)]'
-                : 'bg-white/5 text-white/50 hover:text-white hover:bg-white/10'
+                ? 'btn-primary text-white shadow-[0_0_20px_rgba(0,117,255,0.3)]'
+                : 'text-white/40 hover:text-white/70 hover:bg-white/5'
             }`}
           >
             <Clock className="h-4 w-4" />
-            Мои сессии
+            {'\u041C\u043E\u0438 \u0441\u0435\u0441\u0441\u0438\u0438'}
           </button>
           <button
             onClick={() => setActiveTab(1)}
-            className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all ${
+            className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all duration-300 ${
               activeTab === 1
-                ? 'bg-[#0075FF] text-white shadow-[0_0_15px_rgba(0,117,255,0.3)]'
-                : 'bg-white/5 text-white/50 hover:text-white hover:bg-white/10'
+                ? 'btn-primary text-white shadow-[0_0_20px_rgba(0,117,255,0.3)]'
+                : 'text-white/40 hover:text-white/70 hover:bg-white/5'
             }`}
           >
             <Users className="h-4 w-4" />
-            Все сессии
+            {'\u0412\u0441\u0435 \u0441\u0435\u0441\u0441\u0438\u0438'}
           </button>
         </div>
 
         {activeTab === 0 && (
-          <>
-            <h3 className="text-lg font-bold text-white mb-4">Мои сессии</h3>
+          <div style={{ animation: 'fadeInUp 0.3s ease-out' }}>
+            <div className="flex items-center gap-2 mb-4">
+              <h3 className="text-lg font-bold text-white">{'\u041C\u043E\u0438 \u0441\u0435\u0441\u0441\u0438\u0438'}</h3>
+              <span className="text-xs text-white/20 bg-white/5 rounded-full px-2.5 py-0.5 font-medium">
+                {mySessions.length}
+              </span>
+            </div>
             {loadingMy ? (
-              <p className="text-sm text-white/40">Загрузка...</p>
+              <div className="flex items-center gap-2 py-8 justify-center">
+                <div className="h-4 w-4 rounded-full border-2 border-[#0075FF]/30 border-t-[#0075FF] animate-spin" />
+                <p className="text-sm text-white/30">{'\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430...'}</p>
+              </div>
             ) : (
               <SessionTable sessions={mySessions} />
             )}
-          </>
+          </div>
         )}
 
         {activeTab === 1 && (
-          <>
-            <h3 className="text-lg font-bold text-white mb-4">Все сессии организации</h3>
+          <div style={{ animation: 'fadeInUp 0.3s ease-out' }}>
+            <div className="flex items-center gap-2 mb-4">
+              <h3 className="text-lg font-bold text-white">{'\u0412\u0441\u0435 \u0441\u0435\u0441\u0441\u0438\u0438 \u043E\u0440\u0433\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u0438'}</h3>
+              <span className="text-xs text-white/20 bg-white/5 rounded-full px-2.5 py-0.5 font-medium">
+                {orgSessions.length}
+              </span>
+            </div>
             {loadingOrg ? (
-              <p className="text-sm text-white/40">Загрузка...</p>
+              <div className="flex items-center gap-2 py-8 justify-center">
+                <div className="h-4 w-4 rounded-full border-2 border-[#0075FF]/30 border-t-[#0075FF] animate-spin" />
+                <p className="text-sm text-white/30">{'\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430...'}</p>
+              </div>
             ) : (
               <SessionTable sessions={orgSessions} />
             )}
-          </>
+          </div>
         )}
       </div>
     </div>

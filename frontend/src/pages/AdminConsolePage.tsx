@@ -65,7 +65,7 @@ function VisionInput({
       onChange={onChange}
       placeholder={placeholder}
       min={min}
-      className="w-full h-10 rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder:text-white/30 focus:border-[#0075FF] focus:outline-none transition-colors"
+      className="vision-input w-full h-10 px-4 text-sm text-white placeholder:text-white/20 focus:outline-none"
       {...rest}
     />
   )
@@ -84,7 +84,7 @@ function VisionSelect({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full h-10 rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white focus:border-[#0075FF] focus:outline-none transition-colors"
+      className="vision-input w-full h-10 px-4 text-sm text-white focus:outline-none appearance-none cursor-pointer"
     >
       {children}
     </select>
@@ -104,11 +104,12 @@ function VisionButton({
   children: React.ReactNode
   size?: 'sm' | 'md'
 }) {
+  const base = 'rounded-xl font-bold transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed'
   const styles = {
-    primary: 'bg-[#0075FF] text-white hover:bg-[#0063D6]',
-    danger: 'bg-[#E31A1A]/20 border border-[#E31A1A]/30 text-[#E31A1A] hover:bg-[#E31A1A]/30',
-    outline: 'border border-white/10 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white',
-    success: 'bg-[#01B574] text-white hover:bg-[#01A066]',
+    primary: 'btn-primary text-white',
+    danger: 'bg-[#E31A1A]/10 border border-[#E31A1A]/20 text-[#E31A1A] hover:bg-[#E31A1A]/20',
+    outline: 'border border-white/10 bg-white/[0.03] text-white/60 hover:bg-white/[0.08] hover:text-white hover:border-white/20',
+    success: 'bg-gradient-to-r from-[#01B574] to-[#00D68F] text-white shadow-[0_0_15px_rgba(1,181,116,0.2)] hover:shadow-[0_0_25px_rgba(1,181,116,0.4)]',
   }
   const sizes = {
     sm: 'px-3 py-1.5 text-xs',
@@ -118,10 +119,45 @@ function VisionButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`rounded-xl font-bold transition-colors disabled:opacity-50 ${styles[variant]} ${sizes[size]}`}
+      className={`${base} ${styles[variant]} ${sizes[size]}`}
     >
       {children}
     </button>
+  )
+}
+
+function LoadingSpinner() {
+  return (
+    <div className="flex items-center gap-2 py-8 justify-center">
+      <div className="h-4 w-4 rounded-full border-2 border-[#0075FF]/30 border-t-[#0075FF] animate-spin" />
+      <p className="text-sm text-white/30">{'\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430...'}</p>
+    </div>
+  )
+}
+
+function EmptyState({ text, icon: Icon }: { text: string; icon?: React.ElementType }) {
+  const IconComp = Icon || FileSearch
+  return (
+    <div className="flex flex-col items-center justify-center py-10 gap-3">
+      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.04]">
+        <IconComp className="h-5 w-5 text-white/15" />
+      </div>
+      <p className="text-sm text-white/25 font-medium">{text}</p>
+    </div>
+  )
+}
+
+function SectionHeader({ title, icon: Icon, iconColor = '#0075FF', subtitle }: { title: string; icon: React.ElementType; iconColor?: string; subtitle?: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-5">
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: `linear-gradient(135deg, ${iconColor}, ${iconColor}88)`, boxShadow: `0 0 20px ${iconColor}33` }}>
+        <Icon className="h-4.5 w-4.5 text-white" />
+      </div>
+      <div>
+        <h3 className="text-base font-bold text-white">{title}</h3>
+        {subtitle && <p className="text-xs text-white/30">{subtitle}</p>}
+      </div>
+    </div>
   )
 }
 
@@ -137,7 +173,7 @@ function OrgTab({ orgId }: { orgId: string }) {
       const r = await listJoinRequests(orgId)
       setRequests(r.data)
     } catch {
-      toast.error('Не удалось загрузить заявки')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u0437\u0430\u044F\u0432\u043A\u0438')
     } finally {
       setLoading(false)
     }
@@ -148,61 +184,59 @@ function OrgTab({ orgId }: { orgId: string }) {
   async function handleApprove(id: string) {
     try {
       await approveJoinRequest(orgId, id)
-      toast.success('Заявка одобрена')
+      toast.success('\u0417\u0430\u044F\u0432\u043A\u0430 \u043E\u0434\u043E\u0431\u0440\u0435\u043D\u0430')
       load()
     } catch {
-      toast.error('Ошибка одобрения')
+      toast.error('\u041E\u0448\u0438\u0431\u043A\u0430 \u043E\u0434\u043E\u0431\u0440\u0435\u043D\u0438\u044F')
     }
   }
 
   async function handleReject(id: string) {
     try {
       await rejectJoinRequest(orgId, id)
-      toast.success('Заявка отклонена')
+      toast.success('\u0417\u0430\u044F\u0432\u043A\u0430 \u043E\u0442\u043A\u043B\u043E\u043D\u0435\u043D\u0430')
       load()
     } catch {
-      toast.error('Ошибка отклонения')
+      toast.error('\u041E\u0448\u0438\u0431\u043A\u0430 \u043E\u0442\u043A\u043B\u043E\u043D\u0435\u043D\u0438\u044F')
     }
   }
 
   return (
-    <div className="vision-card p-6">
-      <h3 className="text-lg font-bold text-white mb-4">Заявки на вступление</h3>
-      {loading ? (
-        <p className="text-sm text-white/40">Загрузка...</p>
-      ) : requests.length === 0 ? (
-        <p className="text-sm text-white/40">Нет заявок.</p>
+    <div className="vision-card p-6" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
+      <SectionHeader title={'\u0417\u0430\u044F\u0432\u043A\u0438 \u043D\u0430 \u0432\u0441\u0442\u0443\u043F\u043B\u0435\u043D\u0438\u0435'} icon={Building2} />
+      {loading ? <LoadingSpinner /> : requests.length === 0 ? (
+        <EmptyState text={'\u041D\u0435\u0442 \u0437\u0430\u044F\u0432\u043E\u043A.'} icon={Building2} />
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/10 text-left">
-                <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">ID</th>
-                <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">User ID</th>
-                <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Статус</th>
-                <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Действия</th>
+                <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">ID</th>
+                <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">User ID</th>
+                <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u0421\u0442\u0430\u0442\u0443\u0441'}</th>
+                <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u044F'}</th>
               </tr>
             </thead>
             <tbody>
-              {requests.map((req) => (
-                <tr key={req.id} className="border-b border-white/5">
-                  <td className="px-4 py-3 font-mono text-xs text-white/60">{req.id}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-white/60">{req.user_id}</td>
-                  <td className="px-4 py-3">
-                    <span className={`rounded-xl px-3 py-1 text-xs font-bold ${
-                      req.status === 'pending' ? 'bg-[#FFB547]/20 text-[#FFB547]' : 'bg-white/10 text-white/50'
+              {requests.map((req, idx) => (
+                <tr key={req.id} className={`border-b border-white/5 transition-colors duration-200 hover:bg-white/[0.03] ${idx % 2 === 1 ? 'bg-white/[0.02]' : ''}`}>
+                  <td className="px-4 py-3.5 font-mono text-xs text-white/50">{req.id}</td>
+                  <td className="px-4 py-3.5 font-mono text-xs text-white/50">{req.user_id}</td>
+                  <td className="px-4 py-3.5">
+                    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                      req.status === 'pending' ? 'bg-[#FFB547]/15 text-[#FFB547]' : 'bg-white/[0.06] text-white/40'
                     }`}>
                       {req.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3.5">
                     {req.status === 'pending' && (
                       <div className="flex gap-2">
-                        <button onClick={() => handleApprove(req.id)} className="flex items-center gap-1 rounded-lg bg-[#01B574]/20 px-3 py-1.5 text-xs font-bold text-[#01B574] hover:bg-[#01B574]/30">
-                          <Check className="h-3 w-3" /> Одобрить
+                        <button onClick={() => handleApprove(req.id)} className="flex items-center gap-1 rounded-lg bg-[#01B574]/10 border border-[#01B574]/20 px-3 py-1.5 text-xs font-bold text-[#01B574] hover:bg-[#01B574]/20 transition-all">
+                          <Check className="h-3 w-3" /> {'\u041E\u0434\u043E\u0431\u0440\u0438\u0442\u044C'}
                         </button>
-                        <button onClick={() => handleReject(req.id)} className="flex items-center gap-1 rounded-lg bg-[#E31A1A]/20 px-3 py-1.5 text-xs font-bold text-[#E31A1A] hover:bg-[#E31A1A]/30">
-                          <X className="h-3 w-3" /> Отклонить
+                        <button onClick={() => handleReject(req.id)} className="flex items-center gap-1 rounded-lg bg-[#E31A1A]/10 border border-[#E31A1A]/20 px-3 py-1.5 text-xs font-bold text-[#E31A1A] hover:bg-[#E31A1A]/20 transition-all">
+                          <X className="h-3 w-3" /> {'\u041E\u0442\u043A\u043B\u043E\u043D\u0438\u0442\u044C'}
                         </button>
                       </div>
                     )}
@@ -232,7 +266,7 @@ function ProjectsTab({ orgId }: { orgId: string }) {
       const r = await listProjects(orgId)
       setProjects(r.data)
     } catch {
-      toast.error('Не удалось загрузить проекты')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u043F\u0440\u043E\u0435\u043A\u0442\u044B')
     } finally {
       setLoading(false)
     }
@@ -247,59 +281,57 @@ function ProjectsTab({ orgId }: { orgId: string }) {
       await createProject(orgId, name.trim(), description.trim() || undefined)
       setName('')
       setDescription('')
-      toast.success('Проект создан')
+      toast.success('\u041F\u0440\u043E\u0435\u043A\u0442 \u0441\u043E\u0437\u0434\u0430\u043D')
       load()
     } catch {
-      toast.error('Не удалось создать проект')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043E\u0437\u0434\u0430\u0442\u044C \u043F\u0440\u043E\u0435\u043A\u0442')
     } finally {
       setCreating(false)
     }
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
       <div className="vision-card p-6">
-        <h3 className="text-lg font-bold text-white mb-4">
-          <Plus className="inline h-4 w-4 mr-2 text-[#0075FF]" />
-          Создать проект
-        </h3>
+        <SectionHeader title={'\u0421\u043E\u0437\u0434\u0430\u0442\u044C \u043F\u0440\u043E\u0435\u043A\u0442'} icon={Plus} iconColor="#0075FF" subtitle={'\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u043D\u043E\u0432\u044B\u0439 \u043F\u0440\u043E\u0435\u043A\u0442 \u0432 \u043E\u0440\u0433\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u044E'} />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 mb-4">
           <div>
-            <label className="block text-xs text-white/50 mb-1">Название</label>
-            <VisionInput value={name} onChange={(e) => setName(e.target.value)} placeholder="Название проекта" />
+            <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{'\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435'}</label>
+            <VisionInput value={name} onChange={(e) => setName(e.target.value)} placeholder={'\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u043F\u0440\u043E\u0435\u043A\u0442\u0430'} />
           </div>
           <div>
-            <label className="block text-xs text-white/50 mb-1">Описание</label>
-            <VisionInput value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Описание" />
+            <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{'\u041E\u043F\u0438\u0441\u0430\u043D\u0438\u0435'}</label>
+            <VisionInput value={description} onChange={(e) => setDescription(e.target.value)} placeholder={'\u041E\u043F\u0438\u0441\u0430\u043D\u0438\u0435'} />
           </div>
         </div>
         <VisionButton onClick={handleCreate} disabled={creating || !name.trim()}>
-          {creating ? 'Создание...' : 'Создать'}
+          {creating ? '\u0421\u043E\u0437\u0434\u0430\u043D\u0438\u0435...' : '\u0421\u043E\u0437\u0434\u0430\u0442\u044C'}
         </VisionButton>
       </div>
 
       <div className="vision-card p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Проекты</h3>
-        {loading ? (
-          <p className="text-sm text-white/40">Загрузка...</p>
-        ) : projects.length === 0 ? (
-          <p className="text-sm text-white/40">Нет проектов.</p>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base font-bold text-white">{'\u041F\u0440\u043E\u0435\u043A\u0442\u044B'}</h3>
+          <span className="text-xs text-white/20 bg-white/5 rounded-full px-2.5 py-0.5">{projects.length}</span>
+        </div>
+        {loading ? <LoadingSpinner /> : projects.length === 0 ? (
+          <EmptyState text={'\u041D\u0435\u0442 \u043F\u0440\u043E\u0435\u043A\u0442\u043E\u0432.'} icon={FolderKanban} />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/10 text-left">
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">ID</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Название</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Описание</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">ID</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435'}</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u041E\u043F\u0438\u0441\u0430\u043D\u0438\u0435'}</th>
                 </tr>
               </thead>
               <tbody>
-                {projects.map((p) => (
-                  <tr key={p.id} className="border-b border-white/5">
-                    <td className="px-4 py-3 font-mono text-xs text-white/60">{p.id}</td>
-                    <td className="px-4 py-3 text-white">{p.name}</td>
-                    <td className="px-4 py-3 text-white/70">{p.description ?? '—'}</td>
+                {projects.map((p, idx) => (
+                  <tr key={p.id} className={`border-b border-white/5 transition-colors duration-200 hover:bg-white/[0.03] ${idx % 2 === 1 ? 'bg-white/[0.02]' : ''}`}>
+                    <td className="px-4 py-3.5 font-mono text-xs text-white/50">{p.id}</td>
+                    <td className="px-4 py-3.5 text-white font-medium">{p.name}</td>
+                    <td className="px-4 py-3.5 text-white/60">{p.description ?? '\u2014'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -330,7 +362,7 @@ function TeamsTab({ orgId }: { orgId: string }) {
       const r = await listTeams(orgId)
       setTeams(r.data)
     } catch {
-      toast.error('Не удалось загрузить команды')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u043A\u043E\u043C\u0430\u043D\u0434\u044B')
     } finally {
       setLoading(false)
     }
@@ -345,10 +377,10 @@ function TeamsTab({ orgId }: { orgId: string }) {
       await createTeam(orgId, teamName.trim(), projectId.trim() || undefined)
       setTeamName('')
       setProjectId('')
-      toast.success('Команда создана')
+      toast.success('\u041A\u043E\u043C\u0430\u043D\u0434\u0430 \u0441\u043E\u0437\u0434\u0430\u043D\u0430')
       load()
     } catch {
-      toast.error('Не удалось создать команду')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043E\u0437\u0434\u0430\u0442\u044C \u043A\u043E\u043C\u0430\u043D\u0434\u0443')
     } finally {
       setCreating(false)
     }
@@ -360,86 +392,81 @@ function TeamsTab({ orgId }: { orgId: string }) {
     try {
       await addTeamMember(orgId, memberTeamId, memberUserId.trim())
       setMemberUserId('')
-      toast.success('Участник добавлен')
+      toast.success('\u0423\u0447\u0430\u0441\u0442\u043D\u0438\u043A \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D')
       load()
     } catch {
-      toast.error('Не удалось добавить участника')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0443\u0447\u0430\u0441\u0442\u043D\u0438\u043A\u0430')
     } finally {
       setAddingMember(false)
     }
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
         <div className="vision-card p-6">
-          <h3 className="text-lg font-bold text-white mb-4">
-            <Plus className="inline h-4 w-4 mr-2 text-[#0075FF]" />
-            Создать команду
-          </h3>
+          <SectionHeader title={'\u0421\u043E\u0437\u0434\u0430\u0442\u044C \u043A\u043E\u043C\u0430\u043D\u0434\u0443'} icon={Plus} iconColor="#0075FF" />
           <div className="space-y-3 mb-4">
             <div>
-              <label className="block text-xs text-white/50 mb-1">Название команды</label>
-              <VisionInput value={teamName} onChange={(e) => setTeamName(e.target.value)} placeholder="Название" />
+              <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{'\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u043A\u043E\u043C\u0430\u043D\u0434\u044B'}</label>
+              <VisionInput value={teamName} onChange={(e) => setTeamName(e.target.value)} placeholder={'\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435'} />
             </div>
             <div>
-              <label className="block text-xs text-white/50 mb-1">ID проекта (необязательно)</label>
+              <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">ID {'\u043F\u0440\u043E\u0435\u043A\u0442\u0430'} ({'\u043D\u0435\u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u043E'})</label>
               <VisionInput value={projectId} onChange={(e) => setProjectId(e.target.value)} placeholder="project_id" />
             </div>
           </div>
           <VisionButton onClick={handleCreate} disabled={creating || !teamName.trim()}>
-            {creating ? 'Создание...' : 'Создать'}
+            {creating ? '\u0421\u043E\u0437\u0434\u0430\u043D\u0438\u0435...' : '\u0421\u043E\u0437\u0434\u0430\u0442\u044C'}
           </VisionButton>
         </div>
 
         <div className="vision-card p-6">
-          <h3 className="text-lg font-bold text-white mb-4">
-            <UsersIcon className="inline h-4 w-4 mr-2 text-[#7551FF]" />
-            Добавить участника
-          </h3>
+          <SectionHeader title={'\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0443\u0447\u0430\u0441\u0442\u043D\u0438\u043A\u0430'} icon={UsersIcon} iconColor="#7551FF" />
           <div className="space-y-3 mb-4">
             <div>
-              <label className="block text-xs text-white/50 mb-1">Команда</label>
+              <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{'\u041A\u043E\u043C\u0430\u043D\u0434\u0430'}</label>
               <VisionSelect value={memberTeamId} onChange={setMemberTeamId}>
-                <option value="" className="bg-[#111C44]">Выберите команду</option>
+                <option value="" className="bg-[#111C44]">{'\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043A\u043E\u043C\u0430\u043D\u0434\u0443'}</option>
                 {teams.map((t) => (
                   <option key={t.id} value={t.id} className="bg-[#111C44]">{t.name}</option>
                 ))}
               </VisionSelect>
             </div>
             <div>
-              <label className="block text-xs text-white/50 mb-1">User ID</label>
+              <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">User ID</label>
               <VisionInput value={memberUserId} onChange={(e) => setMemberUserId(e.target.value)} placeholder="user_id" />
             </div>
           </div>
           <VisionButton onClick={handleAddMember} disabled={addingMember || !memberTeamId || !memberUserId.trim()} variant="success">
-            {addingMember ? 'Добавление...' : 'Добавить'}
+            {addingMember ? '\u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0438\u0435...' : '\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C'}
           </VisionButton>
         </div>
       </div>
 
       <div className="vision-card p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Команды</h3>
-        {loading ? (
-          <p className="text-sm text-white/40">Загрузка...</p>
-        ) : teams.length === 0 ? (
-          <p className="text-sm text-white/40">Нет команд.</p>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base font-bold text-white">{'\u041A\u043E\u043C\u0430\u043D\u0434\u044B'}</h3>
+          <span className="text-xs text-white/20 bg-white/5 rounded-full px-2.5 py-0.5">{teams.length}</span>
+        </div>
+        {loading ? <LoadingSpinner /> : teams.length === 0 ? (
+          <EmptyState text={'\u041D\u0435\u0442 \u043A\u043E\u043C\u0430\u043D\u0434.'} icon={UsersIcon} />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/10 text-left">
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">ID</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Название</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Проект</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">ID</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435'}</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u041F\u0440\u043E\u0435\u043A\u0442'}</th>
                 </tr>
               </thead>
               <tbody>
-                {teams.map((t) => (
-                  <tr key={t.id} className="border-b border-white/5">
-                    <td className="px-4 py-3 font-mono text-xs text-white/60">{t.id}</td>
-                    <td className="px-4 py-3 text-white">{t.name}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-white/60">{t.project_id ?? '—'}</td>
+                {teams.map((t, idx) => (
+                  <tr key={t.id} className={`border-b border-white/5 transition-colors duration-200 hover:bg-white/[0.03] ${idx % 2 === 1 ? 'bg-white/[0.02]' : ''}`}>
+                    <td className="px-4 py-3.5 font-mono text-xs text-white/50">{t.id}</td>
+                    <td className="px-4 py-3.5 text-white font-medium">{t.name}</td>
+                    <td className="px-4 py-3.5 font-mono text-xs text-white/50">{t.project_id ?? '\u2014'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -463,7 +490,7 @@ function UsersTab({ orgId }: { orgId: string }) {
       const r = await listUsers(orgId)
       setUsers(r.data)
     } catch {
-      toast.error('Не удалось загрузить пользователей')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439')
     } finally {
       setLoading(false)
     }
@@ -472,34 +499,35 @@ function UsersTab({ orgId }: { orgId: string }) {
   useEffect(() => { load() }, [load])
 
   return (
-    <div className="vision-card p-6">
+    <div className="vision-card p-6" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-white">Пользователи</h3>
-        <button onClick={load} disabled={loading} className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-white/70 hover:bg-white/10 disabled:opacity-50">
+        <div className="flex items-center gap-2">
+          <h3 className="text-base font-bold text-white">{'\u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0438'}</h3>
+          <span className="text-xs text-white/20 bg-white/5 rounded-full px-2.5 py-0.5">{users.length}</span>
+        </div>
+        <button onClick={load} disabled={loading} className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-bold text-white/50 hover:bg-white/[0.08] hover:text-white disabled:opacity-40 transition-all">
           <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
-          Обновить
+          {'\u041E\u0431\u043D\u043E\u0432\u0438\u0442\u044C'}
         </button>
       </div>
-      {loading ? (
-        <p className="text-sm text-white/40">Загрузка...</p>
-      ) : users.length === 0 ? (
-        <p className="text-sm text-white/40">Нет пользователей.</p>
+      {loading ? <LoadingSpinner /> : users.length === 0 ? (
+        <EmptyState text={'\u041D\u0435\u0442 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439.'} icon={UserCircle} />
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/10 text-left">
-                <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">ID</th>
-                <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Email</th>
-                <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Имя</th>
+                <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">ID</th>
+                <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">Email</th>
+                <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u0418\u043C\u044F'}</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((u) => (
-                <tr key={u.id} className="border-b border-white/5">
-                  <td className="px-4 py-3 font-mono text-xs text-white/60">{u.id}</td>
-                  <td className="px-4 py-3 text-white">{u.email}</td>
-                  <td className="px-4 py-3 text-white/70">{u.full_name}</td>
+              {users.map((u, idx) => (
+                <tr key={u.id} className={`border-b border-white/5 transition-colors duration-200 hover:bg-white/[0.03] ${idx % 2 === 1 ? 'bg-white/[0.02]' : ''}`}>
+                  <td className="px-4 py-3.5 font-mono text-xs text-white/50">{u.id}</td>
+                  <td className="px-4 py-3.5 text-white font-medium">{u.email}</td>
+                  <td className="px-4 py-3.5 text-white/60">{u.full_name}</td>
                 </tr>
               ))}
             </tbody>
@@ -527,7 +555,7 @@ function PrivacyTab({ orgId }: { orgId: string }) {
       const r = await listPrivacyRules(orgId)
       setRules(r.data)
     } catch {
-      toast.error('Не удалось загрузить правила приватности')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u043F\u0440\u0430\u0432\u0438\u043B\u0430 \u043F\u0440\u0438\u0432\u0430\u0442\u043D\u043E\u0441\u0442\u0438')
     } finally {
       setLoading(false)
     }
@@ -541,10 +569,10 @@ function PrivacyTab({ orgId }: { orgId: string }) {
     try {
       await createPrivacyRule(orgId, { target, match_type: matchType, pattern: pattern.trim(), action })
       setPattern('')
-      toast.success('Правило создано')
+      toast.success('\u041F\u0440\u0430\u0432\u0438\u043B\u043E \u0441\u043E\u0437\u0434\u0430\u043D\u043E')
       load()
     } catch {
-      toast.error('Не удалось создать правило')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043E\u0437\u0434\u0430\u0442\u044C \u043F\u0440\u0430\u0432\u0438\u043B\u043E')
     } finally {
       setCreating(false)
     }
@@ -553,23 +581,20 @@ function PrivacyTab({ orgId }: { orgId: string }) {
   async function handleDelete(ruleId: string) {
     try {
       await deletePrivacyRule(orgId, ruleId)
-      toast.success('Правило удалено')
+      toast.success('\u041F\u0440\u0430\u0432\u0438\u043B\u043E \u0443\u0434\u0430\u043B\u0435\u043D\u043E')
       load()
     } catch {
-      toast.error('Не удалось удалить правило')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0443\u0434\u0430\u043B\u0438\u0442\u044C \u043F\u0440\u0430\u0432\u0438\u043B\u043E')
     }
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
       <div className="vision-card p-6">
-        <h3 className="text-lg font-bold text-white mb-4">
-          <Plus className="inline h-4 w-4 mr-2 text-[#0075FF]" />
-          Создать правило
-        </h3>
+        <SectionHeader title={'\u0421\u043E\u0437\u0434\u0430\u0442\u044C \u043F\u0440\u0430\u0432\u0438\u043B\u043E'} icon={Plus} iconColor="#7551FF" subtitle={'\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0430 \u043F\u0440\u0430\u0432\u0438\u043B \u043F\u0440\u0438\u0432\u0430\u0442\u043D\u043E\u0441\u0442\u0438'} />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 mb-4">
           <div>
-            <label className="block text-xs text-white/50 mb-1">Цель</label>
+            <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{'\u0426\u0435\u043B\u044C'}</label>
             <VisionSelect value={target} onChange={setTarget}>
               <option value="app" className="bg-[#111C44]">app</option>
               <option value="url" className="bg-[#111C44]">url</option>
@@ -577,7 +602,7 @@ function PrivacyTab({ orgId }: { orgId: string }) {
             </VisionSelect>
           </div>
           <div>
-            <label className="block text-xs text-white/50 mb-1">Тип совпадения</label>
+            <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{'\u0422\u0438\u043F \u0441\u043E\u0432\u043F\u0430\u0434\u0435\u043D\u0438\u044F'}</label>
             <VisionSelect value={matchType} onChange={setMatchType}>
               <option value="contains" className="bg-[#111C44]">contains</option>
               <option value="equals" className="bg-[#111C44]">equals</option>
@@ -587,11 +612,11 @@ function PrivacyTab({ orgId }: { orgId: string }) {
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 mb-4">
           <div>
-            <label className="block text-xs text-white/50 mb-1">Паттерн</label>
-            <VisionInput value={pattern} onChange={(e) => setPattern(e.target.value)} placeholder="Паттерн для совпадения" />
+            <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{'\u041F\u0430\u0442\u0442\u0435\u0440\u043D'}</label>
+            <VisionInput value={pattern} onChange={(e) => setPattern(e.target.value)} placeholder={'\u041F\u0430\u0442\u0442\u0435\u0440\u043D \u0434\u043B\u044F \u0441\u043E\u0432\u043F\u0430\u0434\u0435\u043D\u0438\u044F'} />
           </div>
           <div>
-            <label className="block text-xs text-white/50 mb-1">Действие</label>
+            <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{'\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435'}</label>
             <VisionSelect value={action} onChange={setAction}>
               <option value="mask" className="bg-[#111C44]">mask</option>
               <option value="block" className="bg-[#111C44]">block</option>
@@ -600,46 +625,47 @@ function PrivacyTab({ orgId }: { orgId: string }) {
           </div>
         </div>
         <VisionButton onClick={handleCreate} disabled={creating || !pattern.trim()}>
-          {creating ? 'Создание...' : 'Создать'}
+          {creating ? '\u0421\u043E\u0437\u0434\u0430\u043D\u0438\u0435...' : '\u0421\u043E\u0437\u0434\u0430\u0442\u044C'}
         </VisionButton>
       </div>
 
       <div className="vision-card p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Правила приватности</h3>
-        {loading ? (
-          <p className="text-sm text-white/40">Загрузка...</p>
-        ) : rules.length === 0 ? (
-          <p className="text-sm text-white/40">Нет правил.</p>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base font-bold text-white">{'\u041F\u0440\u0430\u0432\u0438\u043B\u0430 \u043F\u0440\u0438\u0432\u0430\u0442\u043D\u043E\u0441\u0442\u0438'}</h3>
+          <span className="text-xs text-white/20 bg-white/5 rounded-full px-2.5 py-0.5">{rules.length}</span>
+        </div>
+        {loading ? <LoadingSpinner /> : rules.length === 0 ? (
+          <EmptyState text={'\u041D\u0435\u0442 \u043F\u0440\u0430\u0432\u0438\u043B.'} icon={Shield} />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/10 text-left">
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">ID</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Цель</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Совпадение</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Паттерн</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Действие</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">ID</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u0426\u0435\u043B\u044C'}</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u0421\u043E\u0432\u043F\u0430\u0434\u0435\u043D\u0438\u0435'}</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u041F\u0430\u0442\u0442\u0435\u0440\u043D'}</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435'}</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
               <tbody>
-                {rules.map((rule) => {
+                {rules.map((rule, idx) => {
                   const r = rule as Record<string, unknown>
                   return (
-                    <tr key={String(r.id)} className="border-b border-white/5">
-                      <td className="px-4 py-3 font-mono text-xs text-white/60">{String(r.id)}</td>
-                      <td className="px-4 py-3 text-white/70">{String(r.target ?? '—')}</td>
-                      <td className="px-4 py-3 text-white/70">{String(r.match_type ?? '—')}</td>
-                      <td className="px-4 py-3 font-mono text-xs text-white/60">{String(r.pattern ?? '—')}</td>
-                      <td className="px-4 py-3">
-                        <span className="rounded-xl bg-[#7551FF]/20 px-3 py-1 text-xs font-bold text-[#7551FF]">
-                          {String(r.action ?? '—')}
+                    <tr key={String(r.id)} className={`border-b border-white/5 transition-colors duration-200 hover:bg-white/[0.03] ${idx % 2 === 1 ? 'bg-white/[0.02]' : ''}`}>
+                      <td className="px-4 py-3.5 font-mono text-xs text-white/50">{String(r.id)}</td>
+                      <td className="px-4 py-3.5 text-white/60">{String(r.target ?? '\u2014')}</td>
+                      <td className="px-4 py-3.5 text-white/60">{String(r.match_type ?? '\u2014')}</td>
+                      <td className="px-4 py-3.5 font-mono text-xs text-white/50">{String(r.pattern ?? '\u2014')}</td>
+                      <td className="px-4 py-3.5">
+                        <span className="inline-flex items-center rounded-full bg-[#7551FF]/15 px-3 py-1 text-xs font-semibold text-[#7551FF]">
+                          {String(r.action ?? '\u2014')}
                         </span>
                       </td>
-                      <td className="px-4 py-3">
-                        <button onClick={() => handleDelete(String(r.id))} className="flex items-center gap-1 rounded-lg bg-[#E31A1A]/20 px-3 py-1.5 text-xs font-bold text-[#E31A1A] hover:bg-[#E31A1A]/30">
-                          <Trash2 className="h-3 w-3" /> Удалить
+                      <td className="px-4 py-3.5">
+                        <button onClick={() => handleDelete(String(r.id))} className="flex items-center gap-1 rounded-lg bg-[#E31A1A]/10 border border-[#E31A1A]/20 px-3 py-1.5 text-xs font-bold text-[#E31A1A] hover:bg-[#E31A1A]/20 transition-all">
+                          <Trash2 className="h-3 w-3" /> {'\u0423\u0434\u0430\u043B\u0438\u0442\u044C'}
                         </button>
                       </td>
                     </tr>
@@ -669,7 +695,7 @@ function NotificationsTab({ orgId }: { orgId: string }) {
       const r = await listNotificationHooks(orgId)
       setHooks(r.data)
     } catch {
-      toast.error('Не удалось загрузить хуки')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u0445\u0443\u043A\u0438')
     } finally {
       setLoading(false)
     }
@@ -684,10 +710,10 @@ function NotificationsTab({ orgId }: { orgId: string }) {
       await createNotificationHook(orgId, { event_type: eventType.trim(), url: url.trim() })
       setEventType('')
       setUrl('')
-      toast.success('Хук создан')
+      toast.success('\u0425\u0443\u043A \u0441\u043E\u0437\u0434\u0430\u043D')
       load()
     } catch {
-      toast.error('Не удалось создать хук')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043E\u0437\u0434\u0430\u0442\u044C \u0445\u0443\u043A')
     } finally {
       setCreating(false)
     }
@@ -696,63 +722,65 @@ function NotificationsTab({ orgId }: { orgId: string }) {
   async function handleDelete(hookId: string) {
     try {
       await deleteNotificationHook(orgId, hookId)
-      toast.success('Хук удалён')
+      toast.success('\u0425\u0443\u043A \u0443\u0434\u0430\u043B\u0451\u043D')
       load()
     } catch {
-      toast.error('Не удалось удалить хук')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0443\u0434\u0430\u043B\u0438\u0442\u044C \u0445\u0443\u043A')
     }
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
       <div className="vision-card p-6">
-        <h3 className="text-lg font-bold text-white mb-4">
-          <Plus className="inline h-4 w-4 mr-2 text-[#0075FF]" />
-          Создать хук
-        </h3>
+        <SectionHeader title={'\u0421\u043E\u0437\u0434\u0430\u0442\u044C \u0445\u0443\u043A'} icon={Plus} iconColor="#FFB547" subtitle={'\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0430 webhook-\u0443\u0432\u0435\u0434\u043E\u043C\u043B\u0435\u043D\u0438\u0439'} />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 mb-4">
           <div>
-            <label className="block text-xs text-white/50 mb-1">Тип события</label>
+            <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{'\u0422\u0438\u043F \u0441\u043E\u0431\u044B\u0442\u0438\u044F'}</label>
             <VisionInput value={eventType} onChange={(e) => setEventType(e.target.value)} placeholder="session.start, session.stop..." />
           </div>
           <div>
-            <label className="block text-xs text-white/50 mb-1">URL</label>
+            <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">URL</label>
             <VisionInput value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://..." />
           </div>
         </div>
         <VisionButton onClick={handleCreate} disabled={creating || !eventType.trim() || !url.trim()}>
-          {creating ? 'Создание...' : 'Создать'}
+          {creating ? '\u0421\u043E\u0437\u0434\u0430\u043D\u0438\u0435...' : '\u0421\u043E\u0437\u0434\u0430\u0442\u044C'}
         </VisionButton>
       </div>
 
       <div className="vision-card p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Хуки уведомлений</h3>
-        {loading ? (
-          <p className="text-sm text-white/40">Загрузка...</p>
-        ) : hooks.length === 0 ? (
-          <p className="text-sm text-white/40">Нет хуков.</p>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base font-bold text-white">{'\u0425\u0443\u043A\u0438 \u0443\u0432\u0435\u0434\u043E\u043C\u043B\u0435\u043D\u0438\u0439'}</h3>
+          <span className="text-xs text-white/20 bg-white/5 rounded-full px-2.5 py-0.5">{hooks.length}</span>
+        </div>
+        {loading ? <LoadingSpinner /> : hooks.length === 0 ? (
+          <EmptyState text={'\u041D\u0435\u0442 \u0445\u0443\u043A\u043E\u0432.'} icon={Bell} />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/10 text-left">
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">ID</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Событие</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">URL</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">ID</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u0421\u043E\u0431\u044B\u0442\u0438\u0435'}</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">URL</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
               <tbody>
-                {hooks.map((hook) => {
+                {hooks.map((hook, idx) => {
                   const h = hook as Record<string, unknown>
                   return (
-                    <tr key={String(h.id)} className="border-b border-white/5">
-                      <td className="px-4 py-3 font-mono text-xs text-white/60">{String(h.id)}</td>
-                      <td className="px-4 py-3 text-white/70">{String(h.event_type ?? '—')}</td>
-                      <td className="px-4 py-3 max-w-[200px] truncate font-mono text-xs text-white/60">{String(h.url ?? '—')}</td>
-                      <td className="px-4 py-3">
-                        <button onClick={() => handleDelete(String(h.id))} className="flex items-center gap-1 rounded-lg bg-[#E31A1A]/20 px-3 py-1.5 text-xs font-bold text-[#E31A1A] hover:bg-[#E31A1A]/30">
-                          <Trash2 className="h-3 w-3" /> Удалить
+                    <tr key={String(h.id)} className={`border-b border-white/5 transition-colors duration-200 hover:bg-white/[0.03] ${idx % 2 === 1 ? 'bg-white/[0.02]' : ''}`}>
+                      <td className="px-4 py-3.5 font-mono text-xs text-white/50">{String(h.id)}</td>
+                      <td className="px-4 py-3.5">
+                        <span className="inline-flex items-center rounded-full bg-[#FFB547]/15 px-3 py-1 text-xs font-semibold text-[#FFB547]">
+                          {String(h.event_type ?? '\u2014')}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3.5 max-w-[200px] truncate font-mono text-xs text-white/50">{String(h.url ?? '\u2014')}</td>
+                      <td className="px-4 py-3.5">
+                        <button onClick={() => handleDelete(String(h.id))} className="flex items-center gap-1 rounded-lg bg-[#E31A1A]/10 border border-[#E31A1A]/20 px-3 py-1.5 text-xs font-bold text-[#E31A1A] hover:bg-[#E31A1A]/20 transition-all">
+                          <Trash2 className="h-3 w-3" /> {'\u0423\u0434\u0430\u043B\u0438\u0442\u044C'}
                         </button>
                       </td>
                     </tr>
@@ -779,7 +807,7 @@ function AuditTab({ orgId }: { orgId: string }) {
       const r = await listAudit(orgId)
       setLogs(r.data)
     } catch {
-      toast.error('Не удалось загрузить аудит')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u0430\u0443\u0434\u0438\u0442')
     } finally {
       setLoading(false)
     }
@@ -788,21 +816,19 @@ function AuditTab({ orgId }: { orgId: string }) {
   useEffect(() => { load() }, [load])
 
   return (
-    <div className="vision-card p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-white">Журнал аудита</h3>
-        <button onClick={load} disabled={loading} className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-white/70 hover:bg-white/10 disabled:opacity-50">
+    <div className="vision-card p-6" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
+      <div className="flex items-center justify-between mb-5">
+        <SectionHeader title={'\u0416\u0443\u0440\u043D\u0430\u043B \u0430\u0443\u0434\u0438\u0442\u0430'} icon={FileSearch} iconColor="#01B574" />
+        <button onClick={load} disabled={loading} className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-bold text-white/50 hover:bg-white/[0.08] hover:text-white disabled:opacity-40 transition-all">
           <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
-          Обновить
+          {'\u041E\u0431\u043D\u043E\u0432\u0438\u0442\u044C'}
         </button>
       </div>
-      {loading ? (
-        <p className="text-sm text-white/40">Загрузка...</p>
-      ) : logs.length === 0 ? (
-        <p className="text-sm text-white/40">Нет записей.</p>
+      {loading ? <LoadingSpinner /> : logs.length === 0 ? (
+        <EmptyState text={'\u041D\u0435\u0442 \u0437\u0430\u043F\u0438\u0441\u0435\u0439.'} icon={FileSearch} />
       ) : (
-        <div className="max-h-[500px] overflow-auto rounded-xl border border-white/10 bg-white/5 p-4">
-          <pre className="whitespace-pre-wrap text-xs text-white/70">
+        <div className="max-h-[500px] overflow-auto rounded-2xl bg-[#060B26]/80 border border-white/[0.06] p-5">
+          <pre className="whitespace-pre-wrap text-xs text-white/60 font-mono leading-relaxed">
             {JSON.stringify(logs, null, 2)}
           </pre>
         </div>
@@ -831,7 +857,7 @@ function SchedulesTab({ orgId }: { orgId: string }) {
       const r = await listSchedules(orgId)
       setSchedules(r.data)
     } catch {
-      toast.error('Не удалось загрузить расписания')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u0440\u0430\u0441\u043F\u0438\u0441\u0430\u043D\u0438\u044F')
     } finally {
       setLoading(false)
     }
@@ -851,14 +877,14 @@ function SchedulesTab({ orgId }: { orgId: string }) {
       if (teamId.trim()) data.team_id = teamId.trim()
       if (schedProjectId.trim()) data.project_id = schedProjectId.trim()
       await createSchedule(orgId, data)
-      toast.success('Расписание создано')
+      toast.success('\u0420\u0430\u0441\u043F\u0438\u0441\u0430\u043D\u0438\u0435 \u0441\u043E\u0437\u0434\u0430\u043D\u043E')
       setStartDate('')
       setEndDate('')
       setTeamId('')
       setSchedProjectId('')
       load()
     } catch {
-      toast.error('Не удалось создать расписание')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043E\u0437\u0434\u0430\u0442\u044C \u0440\u0430\u0441\u043F\u0438\u0441\u0430\u043D\u0438\u0435')
     } finally {
       setCreating(false)
     }
@@ -867,98 +893,100 @@ function SchedulesTab({ orgId }: { orgId: string }) {
   async function handleRun(scheduleId: string) {
     try {
       await runSchedule(orgId, scheduleId, runFormat)
-      toast.success('Отчёт запущен')
+      toast.success('\u041E\u0442\u0447\u0451\u0442 \u0437\u0430\u043F\u0443\u0449\u0435\u043D')
     } catch {
-      toast.error('Не удалось запустить отчёт')
+      toast.error('\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0437\u0430\u043F\u0443\u0441\u0442\u0438\u0442\u044C \u043E\u0442\u0447\u0451\u0442')
     }
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
       <div className="vision-card p-6">
-        <h3 className="text-lg font-bold text-white mb-4">
-          <Plus className="inline h-4 w-4 mr-2 text-[#0075FF]" />
-          Создать расписание
-        </h3>
+        <SectionHeader title={'\u0421\u043E\u0437\u0434\u0430\u0442\u044C \u0440\u0430\u0441\u043F\u0438\u0441\u0430\u043D\u0438\u0435'} icon={Plus} iconColor="#0075FF" subtitle={'\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0433\u0435\u043D\u0435\u0440\u0430\u0446\u0438\u044F \u043E\u0442\u0447\u0451\u0442\u043E\u0432'} />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 mb-3">
           <div>
-            <label className="block text-xs text-white/50 mb-1">Тип отчёта</label>
+            <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{'\u0422\u0438\u043F \u043E\u0442\u0447\u0451\u0442\u0430'}</label>
             <VisionSelect value={reportType} onChange={setReportType}>
               <option value="org-kpi" className="bg-[#111C44]">org-kpi</option>
               <option value="project-kpi" className="bg-[#111C44]">project-kpi</option>
             </VisionSelect>
           </div>
           <div>
-            <label className="block text-xs text-white/50 mb-1">Интервал (дни)</label>
+            <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{'\u0418\u043D\u0442\u0435\u0440\u0432\u0430\u043B'} ({'\u0434\u043D\u0438'})</label>
             <VisionInput type="number" value={intervalDays} onChange={(e) => setIntervalDays(e.target.value)} min={1} />
           </div>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 mb-3">
           <div>
-            <label className="block text-xs text-white/50 mb-1">Дата начала</label>
+            <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{'\u0414\u0430\u0442\u0430 \u043D\u0430\u0447\u0430\u043B\u0430'}</label>
             <VisionInput type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
           </div>
           <div>
-            <label className="block text-xs text-white/50 mb-1">Дата окончания</label>
+            <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{'\u0414\u0430\u0442\u0430 \u043E\u043A\u043E\u043D\u0447\u0430\u043D\u0438\u044F'}</label>
             <VisionInput type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
           </div>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 mb-4">
           <div>
-            <label className="block text-xs text-white/50 mb-1">Team ID (необязательно)</label>
+            <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Team ID ({'\u043D\u0435\u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u043E'})</label>
             <VisionInput value={teamId} onChange={(e) => setTeamId(e.target.value)} placeholder="team_id" />
           </div>
           <div>
-            <label className="block text-xs text-white/50 mb-1">Project ID (необязательно)</label>
+            <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">Project ID ({'\u043D\u0435\u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u043E'})</label>
             <VisionInput value={schedProjectId} onChange={(e) => setSchedProjectId(e.target.value)} placeholder="project_id" />
           </div>
         </div>
         <VisionButton onClick={handleCreate} disabled={creating}>
-          {creating ? 'Создание...' : 'Создать'}
+          {creating ? '\u0421\u043E\u0437\u0434\u0430\u043D\u0438\u0435...' : '\u0421\u043E\u0437\u0434\u0430\u0442\u044C'}
         </VisionButton>
       </div>
 
       <div className="vision-card p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-white">Расписания</h3>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-white/40">Формат:</span>
+            <h3 className="text-base font-bold text-white">{'\u0420\u0430\u0441\u043F\u0438\u0441\u0430\u043D\u0438\u044F'}</h3>
+            <span className="text-xs text-white/20 bg-white/5 rounded-full px-2.5 py-0.5">{schedules.length}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-white/30 uppercase tracking-wider">{'\u0424\u043E\u0440\u043C\u0430\u0442'}:</span>
             <VisionSelect value={runFormat} onChange={setRunFormat}>
               <option value="json" className="bg-[#111C44]">json</option>
               <option value="csv" className="bg-[#111C44]">csv</option>
             </VisionSelect>
           </div>
         </div>
-        {loading ? (
-          <p className="text-sm text-white/40">Загрузка...</p>
-        ) : schedules.length === 0 ? (
-          <p className="text-sm text-white/40">Нет расписаний.</p>
+        {loading ? <LoadingSpinner /> : schedules.length === 0 ? (
+          <EmptyState text={'\u041D\u0435\u0442 \u0440\u0430\u0441\u043F\u0438\u0441\u0430\u043D\u0438\u0439.'} icon={CalendarClock} />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/10 text-left">
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">ID</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Тип</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Интервал</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Начало</th>
-                  <th className="px-4 py-3 text-xs font-medium text-white/40 uppercase">Конец</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">ID</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u0422\u0438\u043F'}</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u0418\u043D\u0442\u0435\u0440\u0432\u0430\u043B'}</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u041D\u0430\u0447\u0430\u043B\u043E'}</th>
+                  <th className="px-4 py-3 text-[10px] font-semibold text-white/40 uppercase tracking-wider">{'\u041A\u043E\u043D\u0435\u0446'}</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
               <tbody>
-                {schedules.map((sched) => {
+                {schedules.map((sched, idx) => {
                   const s = sched as Record<string, unknown>
                   return (
-                    <tr key={String(s.id)} className="border-b border-white/5">
-                      <td className="px-4 py-3 font-mono text-xs text-white/60">{String(s.id)}</td>
-                      <td className="px-4 py-3 text-white/70">{String(s.report_type ?? '—')}</td>
-                      <td className="px-4 py-3 text-white/70">{String(s.interval_days ?? '—')} дн.</td>
-                      <td className="px-4 py-3 text-white/70">{String(s.start_date ?? '—')}</td>
-                      <td className="px-4 py-3 text-white/70">{String(s.end_date ?? '—')}</td>
-                      <td className="px-4 py-3">
-                        <button onClick={() => handleRun(String(s.id))} className="flex items-center gap-1 rounded-lg bg-[#01B574]/20 px-3 py-1.5 text-xs font-bold text-[#01B574] hover:bg-[#01B574]/30">
-                          <Play className="h-3 w-3" /> Запустить
+                    <tr key={String(s.id)} className={`border-b border-white/5 transition-colors duration-200 hover:bg-white/[0.03] ${idx % 2 === 1 ? 'bg-white/[0.02]' : ''}`}>
+                      <td className="px-4 py-3.5 font-mono text-xs text-white/50">{String(s.id)}</td>
+                      <td className="px-4 py-3.5">
+                        <span className="inline-flex items-center rounded-full bg-[#0075FF]/15 px-3 py-1 text-xs font-semibold text-[#0075FF]">
+                          {String(s.report_type ?? '\u2014')}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3.5 text-white/60">{String(s.interval_days ?? '\u2014')} {'\u0434\u043D.'}</td>
+                      <td className="px-4 py-3.5 text-white/60 text-xs">{String(s.start_date ?? '\u2014')}</td>
+                      <td className="px-4 py-3.5 text-white/60 text-xs">{String(s.end_date ?? '\u2014')}</td>
+                      <td className="px-4 py-3.5">
+                        <button onClick={() => handleRun(String(s.id))} className="flex items-center gap-1 rounded-lg bg-[#01B574]/10 border border-[#01B574]/20 px-3 py-1.5 text-xs font-bold text-[#01B574] hover:bg-[#01B574]/20 transition-all">
+                          <Play className="h-3 w-3" /> {'\u0417\u0430\u043F\u0443\u0441\u0442\u0438\u0442\u044C'}
                         </button>
                       </td>
                     </tr>
@@ -976,14 +1004,14 @@ function SchedulesTab({ orgId }: { orgId: string }) {
 /* ─── Tab Config ─── */
 
 const tabs = [
-  { id: 0, label: 'Организация', icon: Building2 },
-  { id: 1, label: 'Проекты', icon: FolderKanban },
-  { id: 2, label: 'Команды', icon: UsersIcon },
-  { id: 3, label: 'Пользователи', icon: UserCircle },
-  { id: 4, label: 'Приватность', icon: Shield },
-  { id: 5, label: 'Уведомления', icon: Bell },
-  { id: 6, label: 'Аудит', icon: FileSearch },
-  { id: 7, label: 'Расписания', icon: CalendarClock },
+  { id: 0, label: '\u041E\u0440\u0433\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u044F', icon: Building2 },
+  { id: 1, label: '\u041F\u0440\u043E\u0435\u043A\u0442\u044B', icon: FolderKanban },
+  { id: 2, label: '\u041A\u043E\u043C\u0430\u043D\u0434\u044B', icon: UsersIcon },
+  { id: 3, label: '\u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0438', icon: UserCircle },
+  { id: 4, label: '\u041F\u0440\u0438\u0432\u0430\u0442\u043D\u043E\u0441\u0442\u044C', icon: Shield },
+  { id: 5, label: '\u0423\u0432\u0435\u0434\u043E\u043C\u043B\u0435\u043D\u0438\u044F', icon: Bell },
+  { id: 6, label: '\u0410\u0443\u0434\u0438\u0442', icon: FileSearch },
+  { id: 7, label: '\u0420\u0430\u0441\u043F\u0438\u0441\u0430\u043D\u0438\u044F', icon: CalendarClock },
 ]
 
 /* ─── Main AdminConsolePage ─── */
@@ -995,37 +1023,47 @@ export default function AdminConsolePage() {
   if (!orgId) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <p className="text-white/40">
-          Присоединитесь к организации, чтобы открыть консоль администратора.
-        </p>
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5">
+            <Shield className="h-7 w-7 text-white/20" />
+          </div>
+          <p className="text-white/40 text-sm">
+            {'\u041F\u0440\u0438\u0441\u043E\u0435\u0434\u0438\u043D\u0438\u0442\u0435\u0441\u044C \u043A \u043E\u0440\u0433\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u0438, \u0447\u0442\u043E\u0431\u044B \u043E\u0442\u043A\u0440\u044B\u0442\u044C \u043A\u043E\u043D\u0441\u043E\u043B\u044C \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430.'}
+          </p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-white">Консоль администратора</h1>
+    <div className="page-enter space-y-6">
+      {/* Page Title */}
+      <h1 className="gradient-text text-3xl font-extrabold tracking-tight">
+        {'\u041F\u0430\u043D\u0435\u043B\u044C \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430'}
+      </h1>
 
-      {/* Tab buttons */}
-      <div className="flex flex-wrap gap-2">
-        {tabs.map((tab) => {
-          const Icon = tab.icon
-          const isActive = activeTab === tab.id
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition-all ${
-                isActive
-                  ? 'bg-[#0075FF] text-white shadow-[0_0_15px_rgba(0,117,255,0.3)]'
-                  : 'bg-white/5 text-white/50 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              <Icon className="h-3.5 w-3.5" />
-              {tab.label}
-            </button>
-          )
-        })}
+      {/* Tab Navigation */}
+      <div className="overflow-x-auto pb-1 -mx-1 px-1">
+        <div className="flex gap-1.5 p-1 rounded-2xl bg-white/[0.03] w-fit">
+          {tabs.map((tab) => {
+            const Icon = tab.icon
+            const isActive = activeTab === tab.id
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold whitespace-nowrap transition-all duration-300 ${
+                  isActive
+                    ? 'btn-primary text-white shadow-[0_0_20px_rgba(0,117,255,0.3)]'
+                    : 'text-white/35 hover:text-white/60 hover:bg-white/[0.04]'
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                {tab.label}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {/* Tab content */}
