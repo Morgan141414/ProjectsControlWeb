@@ -40,7 +40,7 @@
     "passwordPlaceholder": "Ваш пароль",
     "namePlaceholder": "Ваше полное имя",
     "passwordMinLength": "Минимум 8 символов",
-    "passwordRequirements": "Минимум 8 символов, заглавная и строчная буква, цифра и спецсимвол (!@#$%...)",
+    "passwordRequirements": "Минимум 8 символов, заглавная и строчная буква, цифра",
     "loginButton": "ВОЙТИ",
     "registerButton": "ЗАРЕГИСТРИРОВАТЬСЯ",
     "loggingIn": "Вход...",

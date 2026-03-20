@@ -40,7 +40,7 @@
     "passwordPlaceholder": "Your password",
     "namePlaceholder": "Your full name",
     "passwordMinLength": "Minimum 8 characters",
-    "passwordRequirements": "Min 8 chars, uppercase, lowercase, digit, and special character (!@#$%...)",
+    "passwordRequirements": "Min 8 chars, uppercase, lowercase, and digit",
     "loginButton": "SIGN IN",
     "registerButton": "SIGN UP",
     "loggingIn": "Signing in...",
