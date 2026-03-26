@@ -16,7 +16,6 @@ from app.core.middleware import (
     SecurityHeadersMiddleware,
 )
 from app.core.rate_limit import limiter
-from app.core.retention import cleanup_activity_events, cleanup_recordings
 from app.core.scheduler import shutdown_scheduler, start_scheduler
 from app.core.sentry import init_sentry
 from app.db.session import SessionLocal, engine
@@ -91,11 +90,6 @@ def on_startup() -> None:
         from app.db.base import Base
         Base.metadata.create_all(bind=engine)
 
-    with SessionLocal() as db:
-        deleted_recordings = cleanup_recordings(db)
-        deleted_events = cleanup_activity_events(db)
-        if deleted_recordings or deleted_events:
-            db.commit()
     start_scheduler()
     logger.info("application_started", environment=settings.ENVIRONMENT)
 

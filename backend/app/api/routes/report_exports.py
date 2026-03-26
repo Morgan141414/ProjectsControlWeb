@@ -7,12 +7,12 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from app.core.audit import log_audit
-from app.core.deps import get_current_user, get_db, get_org_membership, require_role
+from app.core.deps import get_current_user, get_db, get_org_membership, require_role, MANAGEMENT_ROLES
 from app.core.report_exports import ReportExportError, export_org_kpi, export_project_kpi
 from app.core.reporting_runner import run_schedule_export
 from app.core.notifications import send_notification
 from app.core.time import utc_now_naive
-from app.models.enums import AuditAction, NotificationEvent, OrgRole
+from app.models.enums import AuditAction, NotificationEvent
 from app.models.reporting import ReportExport, ReportSchedule
 from app.models.user import User
 from app.schemas.reporting import ReportExportResponse, ReportScheduleCreate, ReportScheduleResponse
@@ -93,7 +93,7 @@ def export_org_kpi_report(
     current_user: User = Depends(get_current_user),
 ) -> ReportExport:
     membership = get_org_membership(org_id, current_user, db)
-    require_role(membership, {OrgRole.admin, OrgRole.manager})
+    require_role(membership, MANAGEMENT_ROLES)
 
     report = compute_org_kpi_report(
         db,
@@ -147,7 +147,7 @@ def export_project_kpi_report(
     current_user: User = Depends(get_current_user),
 ) -> ReportExport:
     membership = get_org_membership(org_id, current_user, db)
-    require_role(membership, {OrgRole.admin, OrgRole.manager})
+    require_role(membership, MANAGEMENT_ROLES)
 
     report = compute_project_kpi_report(
         db,
@@ -196,7 +196,7 @@ def list_exports(
     current_user: User = Depends(get_current_user),
 ) -> list[ReportExport]:
     membership = get_org_membership(org_id, current_user, db)
-    require_role(membership, {OrgRole.admin, OrgRole.manager})
+    require_role(membership, MANAGEMENT_ROLES)
 
     return (
         db.query(ReportExport)
@@ -214,7 +214,7 @@ def download_export(
     current_user: User = Depends(get_current_user),
 ) -> FileResponse:
     membership = get_org_membership(org_id, current_user, db)
-    require_role(membership, {OrgRole.admin, OrgRole.manager})
+    require_role(membership, MANAGEMENT_ROLES)
 
     export = db.get(ReportExport, export_id)
     if not export or export.org_id != org_id:
@@ -235,7 +235,7 @@ def create_schedule(
     current_user: User = Depends(get_current_user),
 ) -> ReportSchedule:
     membership = get_org_membership(org_id, current_user, db)
-    require_role(membership, {OrgRole.admin, OrgRole.manager})
+    require_role(membership, MANAGEMENT_ROLES)
 
     if payload.report_type not in {"org_kpi", "project_kpi"}:
         raise HTTPException(status_code=400, detail="Unsupported report type")
@@ -275,7 +275,7 @@ def list_schedules(
     current_user: User = Depends(get_current_user),
 ) -> list[ReportSchedule]:
     membership = get_org_membership(org_id, current_user, db)
-    require_role(membership, {OrgRole.admin, OrgRole.manager})
+    require_role(membership, MANAGEMENT_ROLES)
 
     return (
         db.query(ReportSchedule)
@@ -294,7 +294,7 @@ def run_schedule(
     current_user: User = Depends(get_current_user),
 ) -> ReportExport:
     membership = get_org_membership(org_id, current_user, db)
-    require_role(membership, {OrgRole.admin, OrgRole.manager})
+    require_role(membership, MANAGEMENT_ROLES)
 
     schedule = db.get(ReportSchedule, schedule_id)
     if not schedule or schedule.org_id != org_id:

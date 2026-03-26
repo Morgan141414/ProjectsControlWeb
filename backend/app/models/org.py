@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum as SAEnum, ForeignKey, String
+from sqlalchemy import Boolean, DateTime, Enum as SAEnum, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -17,8 +17,20 @@ class Organization(Base):
     join_code: Mapped[str] = mapped_column(
         String(16), unique=True, index=True, default=new_join_code
     )
+    description: Mapped[str | None] = mapped_column(Text)
+    industry: Mapped[str | None] = mapped_column(String(200))
+    website: Mapped[str | None] = mapped_column(String(500))
+    logo_url: Mapped[str | None] = mapped_column(String(500))
+    owner_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("users.id"))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    suspended_at: Mapped[datetime | None] = mapped_column(DateTime)
+    max_members: Mapped[int] = mapped_column(Integer, default=50)
+    auto_approve: Mapped[bool] = mapped_column(Boolean, default=False)
+    welcome_message: Mapped[str | None] = mapped_column(Text)
+    theme_color: Mapped[str | None] = mapped_column(String(20))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
+    owner = relationship("User", foreign_keys=[owner_id])
     memberships = relationship(
         "OrgMembership", back_populates="organization", cascade="all, delete-orphan"
     )

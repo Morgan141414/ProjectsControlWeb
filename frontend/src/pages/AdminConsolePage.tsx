@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { useOrgStore } from '@/stores/orgStore'
+import { useUiStore } from '@/stores/uiStore'
 import {
   listJoinRequests,
   approveJoinRequest,
@@ -110,7 +111,7 @@ function VisionButton({
     primary: 'btn-primary text-white',
     danger: 'bg-[#E31A1A]/10 border border-[#E31A1A]/20 text-[#E31A1A] hover:bg-[#E31A1A]/20',
     outline: 'border border-white/10 bg-white/[0.03] text-white/60 hover:bg-white/[0.08] hover:text-white hover:border-white/20',
-    success: 'bg-gradient-to-r from-[#01B574] to-[#00D68F] text-white shadow-[0_0_15px_rgba(1,181,116,0.2)] hover:shadow-[0_0_25px_rgba(1,181,116,0.4)]',
+    success: 'bg-gradient-to-r from-[#17a86b] to-[#23c27d] text-white shadow-[0_0_15px_rgba(1,181,116,0.2)] hover:shadow-[0_0_25px_rgba(1,181,116,0.4)]',
   }
   const sizes = {
     sm: 'px-3 py-1.5 text-xs',
@@ -131,7 +132,7 @@ function LoadingSpinner() {
   const { t } = useTranslation()
   return (
     <div className="flex items-center gap-2 py-8 justify-center">
-      <div className="h-4 w-4 rounded-full border-2 border-[#0075FF]/30 border-t-[#0075FF] animate-spin" />
+      <div className="h-4 w-4 rounded-full border-2 border-[#0f8f5d]/30 border-t-[#0f8f5d] animate-spin" />
       <p className="text-sm text-white/30">{t('common.loading')}</p>
     </div>
   )
@@ -149,7 +150,7 @@ function EmptyState({ text, icon: Icon }: { text: string; icon?: React.ElementTy
   )
 }
 
-function SectionHeader({ title, icon: Icon, iconColor = '#0075FF', subtitle }: { title: string; icon: React.ElementType; iconColor?: string; subtitle?: string }) {
+function SectionHeader({ title, icon: Icon, iconColor = '#0f8f5d', subtitle }: { title: string; icon: React.ElementType; iconColor?: string; subtitle?: string }) {
   return (
     <div className="flex items-center gap-3 mb-5">
       <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: `linear-gradient(135deg, ${iconColor}, ${iconColor}88)`, boxShadow: `0 0 20px ${iconColor}33` }}>
@@ -235,7 +236,7 @@ function OrgTab({ orgId }: { orgId: string }) {
                   <td className="px-4 py-3.5">
                     {req.status === 'pending' && (
                       <div className="flex gap-2">
-                        <button onClick={() => handleApprove(req.id)} className="flex items-center gap-1 rounded-lg bg-[#01B574]/10 border border-[#01B574]/20 px-3 py-1.5 text-xs font-bold text-[#01B574] hover:bg-[#01B574]/20 transition-all">
+                        <button onClick={() => handleApprove(req.id)} className="flex items-center gap-1 rounded-lg bg-[#17a86b]/10 border border-[#17a86b]/20 px-3 py-1.5 text-xs font-bold text-[#17a86b] hover:bg-[#17a86b]/20 transition-all">
                           <Check className="h-3 w-3" /> {t('admin.approve')}
                         </button>
                         <button onClick={() => handleReject(req.id)} className="flex items-center gap-1 rounded-lg bg-[#E31A1A]/10 border border-[#E31A1A]/20 px-3 py-1.5 text-xs font-bold text-[#E31A1A] hover:bg-[#E31A1A]/20 transition-all">
@@ -297,7 +298,7 @@ function ProjectsTab({ orgId }: { orgId: string }) {
   return (
     <div className="space-y-5" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
       <div className="vision-card p-6">
-        <SectionHeader title={t('admin.createProject')} icon={Plus} iconColor="#0075FF" subtitle={t('admin.addNewProject')} />
+        <SectionHeader title={t('admin.createProject')} icon={Plus} iconColor="#0f8f5d" subtitle={t('admin.addNewProject')} />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 mb-4">
           <div>
             <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{t('admin.name')}</label>
@@ -410,7 +411,7 @@ function TeamsTab({ orgId }: { orgId: string }) {
     <div className="space-y-5" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
         <div className="vision-card p-6">
-          <SectionHeader title={t('admin.createTeam')} icon={Plus} iconColor="#0075FF" />
+          <SectionHeader title={t('admin.createTeam')} icon={Plus} iconColor="#0f8f5d" />
           <div className="space-y-3 mb-4">
             <div>
               <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{t('admin.teamName')}</label>
@@ -427,14 +428,14 @@ function TeamsTab({ orgId }: { orgId: string }) {
         </div>
 
         <div className="vision-card p-6">
-          <SectionHeader title={t('admin.addMember')} icon={UsersIcon} iconColor="#7551FF" />
+          <SectionHeader title={t('admin.addMember')} icon={UsersIcon} iconColor="#159f6a" />
           <div className="space-y-3 mb-4">
             <div>
               <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{t('admin.team')}</label>
               <VisionSelect value={memberTeamId} onChange={setMemberTeamId}>
-                <option value="" className="bg-[#111C44]">{t('admin.selectTeam')}</option>
+                <option value="" className="bg-[#0b241b]">{t('admin.selectTeam')}</option>
                 {teams.map((tm) => (
-                  <option key={tm.id} value={tm.id} className="bg-[#111C44]">{tm.name}</option>
+                  <option key={tm.id} value={tm.id} className="bg-[#0b241b]">{tm.name}</option>
                 ))}
               </VisionSelect>
             </div>
@@ -598,22 +599,22 @@ function PrivacyTab({ orgId }: { orgId: string }) {
   return (
     <div className="space-y-5" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
       <div className="vision-card p-6">
-        <SectionHeader title={t('admin.createRule')} icon={Plus} iconColor="#7551FF" subtitle={t('admin.privacyRulesConfig')} />
+        <SectionHeader title={t('admin.createRule')} icon={Plus} iconColor="#159f6a" subtitle={t('admin.privacyRulesConfig')} />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 mb-4">
           <div>
             <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{t('admin.target')}</label>
             <VisionSelect value={target} onChange={setTarget}>
-              <option value="app" className="bg-[#111C44]">app</option>
-              <option value="url" className="bg-[#111C44]">url</option>
-              <option value="window" className="bg-[#111C44]">window</option>
+              <option value="app" className="bg-[#0b241b]">app</option>
+              <option value="url" className="bg-[#0b241b]">url</option>
+              <option value="window" className="bg-[#0b241b]">window</option>
             </VisionSelect>
           </div>
           <div>
             <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{t('admin.matchType')}</label>
             <VisionSelect value={matchType} onChange={setMatchType}>
-              <option value="contains" className="bg-[#111C44]">contains</option>
-              <option value="equals" className="bg-[#111C44]">equals</option>
-              <option value="regex" className="bg-[#111C44]">regex</option>
+              <option value="contains" className="bg-[#0b241b]">contains</option>
+              <option value="equals" className="bg-[#0b241b]">equals</option>
+              <option value="regex" className="bg-[#0b241b]">regex</option>
             </VisionSelect>
           </div>
         </div>
@@ -625,9 +626,9 @@ function PrivacyTab({ orgId }: { orgId: string }) {
           <div>
             <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{t('admin.action')}</label>
             <VisionSelect value={action} onChange={setAction}>
-              <option value="mask" className="bg-[#111C44]">mask</option>
-              <option value="block" className="bg-[#111C44]">block</option>
-              <option value="allow" className="bg-[#111C44]">allow</option>
+              <option value="mask" className="bg-[#0b241b]">mask</option>
+              <option value="block" className="bg-[#0b241b]">block</option>
+              <option value="allow" className="bg-[#0b241b]">allow</option>
             </VisionSelect>
           </div>
         </div>
@@ -666,7 +667,7 @@ function PrivacyTab({ orgId }: { orgId: string }) {
                       <td className="px-4 py-3.5 text-white/60">{String(r.match_type ?? '\u2014')}</td>
                       <td className="px-4 py-3.5 font-mono text-xs text-white/50">{String(r.pattern ?? '\u2014')}</td>
                       <td className="px-4 py-3.5">
-                        <span className="inline-flex items-center rounded-full bg-[#7551FF]/15 px-3 py-1 text-xs font-semibold text-[#7551FF]">
+                        <span className="inline-flex items-center rounded-full bg-[#159f6a]/15 px-3 py-1 text-xs font-semibold text-[#159f6a]">
                           {String(r.action ?? '\u2014')}
                         </span>
                       </td>
@@ -827,7 +828,7 @@ function AuditTab({ orgId }: { orgId: string }) {
   return (
     <div className="vision-card p-6" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
       <div className="flex items-center justify-between mb-5">
-        <SectionHeader title={t('admin.auditLog')} icon={FileSearch} iconColor="#01B574" />
+        <SectionHeader title={t('admin.auditLog')} icon={FileSearch} iconColor="#17a86b" />
         <button onClick={load} disabled={loading} className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-bold text-white/50 hover:bg-white/[0.08] hover:text-white disabled:opacity-40 transition-all">
           <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
           {t('admin.refresh')}
@@ -836,7 +837,7 @@ function AuditTab({ orgId }: { orgId: string }) {
       {loading ? <LoadingSpinner /> : logs.length === 0 ? (
         <EmptyState text={t('admin.noRecords')} icon={FileSearch} />
       ) : (
-        <div className="max-h-[500px] overflow-auto rounded-2xl bg-[#060B26]/80 border border-white/[0.06] p-5">
+        <div className="max-h-[500px] overflow-auto rounded-2xl bg-[#04140f]/80 border border-white/[0.06] p-5">
           <pre className="whitespace-pre-wrap text-xs text-white/60 font-mono leading-relaxed">
             {JSON.stringify(logs, null, 2)}
           </pre>
@@ -912,13 +913,13 @@ function SchedulesTab({ orgId }: { orgId: string }) {
   return (
     <div className="space-y-5" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
       <div className="vision-card p-6">
-        <SectionHeader title={t('admin.createSchedule')} icon={Plus} iconColor="#0075FF" subtitle={t('admin.autoReportGeneration')} />
+        <SectionHeader title={t('admin.createSchedule')} icon={Plus} iconColor="#0f8f5d" subtitle={t('admin.autoReportGeneration')} />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 mb-3">
           <div>
             <label className="block text-[10px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">{t('admin.reportType')}</label>
             <VisionSelect value={reportType} onChange={setReportType}>
-              <option value="org-kpi" className="bg-[#111C44]">org-kpi</option>
-              <option value="project-kpi" className="bg-[#111C44]">project-kpi</option>
+              <option value="org-kpi" className="bg-[#0b241b]">org-kpi</option>
+              <option value="project-kpi" className="bg-[#0b241b]">project-kpi</option>
             </VisionSelect>
           </div>
           <div>
@@ -960,8 +961,8 @@ function SchedulesTab({ orgId }: { orgId: string }) {
           <div className="flex items-center gap-2">
             <span className="text-[10px] text-white/30 uppercase tracking-wider">{t('admin.formatLabel')}:</span>
             <VisionSelect value={runFormat} onChange={setRunFormat}>
-              <option value="json" className="bg-[#111C44]">json</option>
-              <option value="csv" className="bg-[#111C44]">csv</option>
+              <option value="json" className="bg-[#0b241b]">json</option>
+              <option value="csv" className="bg-[#0b241b]">csv</option>
             </VisionSelect>
           </div>
         </div>
@@ -987,7 +988,7 @@ function SchedulesTab({ orgId }: { orgId: string }) {
                     <tr key={String(s.id)} className={`border-b border-white/5 transition-colors duration-200 hover:bg-white/[0.03] ${idx % 2 === 1 ? 'bg-white/[0.02]' : ''}`}>
                       <td className="px-4 py-3.5 font-mono text-xs text-white/50">{String(s.id)}</td>
                       <td className="px-4 py-3.5">
-                        <span className="inline-flex items-center rounded-full bg-[#0075FF]/15 px-3 py-1 text-xs font-semibold text-[#0075FF]">
+                        <span className="inline-flex items-center rounded-full bg-[#0f8f5d]/15 px-3 py-1 text-xs font-semibold text-[#0f8f5d]">
                           {String(s.report_type ?? '\u2014')}
                         </span>
                       </td>
@@ -995,7 +996,7 @@ function SchedulesTab({ orgId }: { orgId: string }) {
                       <td className="px-4 py-3.5 text-white/60 text-xs">{String(s.start_date ?? '\u2014')}</td>
                       <td className="px-4 py-3.5 text-white/60 text-xs">{String(s.end_date ?? '\u2014')}</td>
                       <td className="px-4 py-3.5">
-                        <button onClick={() => handleRun(String(s.id))} className="flex items-center gap-1 rounded-lg bg-[#01B574]/10 border border-[#01B574]/20 px-3 py-1.5 text-xs font-bold text-[#01B574] hover:bg-[#01B574]/20 transition-all">
+                        <button onClick={() => handleRun(String(s.id))} className="flex items-center gap-1 rounded-lg bg-[#17a86b]/10 border border-[#17a86b]/20 px-3 py-1.5 text-xs font-bold text-[#17a86b] hover:bg-[#17a86b]/20 transition-all">
                           <Play className="h-3 w-3" /> {t('admin.run')}
                         </button>
                       </td>
@@ -1015,7 +1016,8 @@ function SchedulesTab({ orgId }: { orgId: string }) {
 
 export default function AdminConsolePage() {
   const { t } = useTranslation()
-  const { orgId } = useOrgStore()
+  const isDark = useUiStore((s) => s.theme === 'dark')
+  const orgId = useOrgStore((s) => s.activeOrgId)
   const [activeTab, setActiveTab] = useState(0)
 
   const tabs = [
@@ -1033,10 +1035,10 @@ export default function AdminConsolePage() {
     return (
       <div className="flex h-64 items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5">
-            <Shield className="h-7 w-7 text-white/20" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl" style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(11,36,27,0.05)' }}>
+            <Shield className="h-7 w-7" style={{ color: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(11,36,27,0.22)' }} />
           </div>
-          <p className="text-white/40 text-sm">
+          <p className="text-sm" style={{ color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(11,36,27,0.45)' }}>
             {t('admin.joinOrgMessage')}
           </p>
         </div>
@@ -1053,7 +1055,7 @@ export default function AdminConsolePage() {
 
       {/* Tab Navigation */}
       <div className="overflow-x-auto pb-1 -mx-1 px-1">
-        <div className="flex gap-1.5 p-1 rounded-2xl bg-white/[0.03] w-fit">
+        <div className="flex w-fit gap-1.5 rounded-2xl p-1" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(11,36,27,0.04)' }}>
           {tabs.map((tab) => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
@@ -1064,8 +1066,9 @@ export default function AdminConsolePage() {
                 className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold whitespace-nowrap transition-all duration-300 ${
                   isActive
                     ? 'btn-primary text-white shadow-[0_0_20px_rgba(0,117,255,0.3)]'
-                    : 'text-white/35 hover:text-white/60 hover:bg-white/[0.04]'
+                    : ''
                 }`}
+                style={isActive ? undefined : { color: isDark ? 'rgba(255,255,255,0.35)' : 'rgba(11,36,27,0.5)' }}
               >
                 <Icon className="h-3.5 w-3.5" />
                 {tab.label}

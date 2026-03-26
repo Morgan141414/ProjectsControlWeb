@@ -1,9 +1,22 @@
 from enum import Enum
 
 
+class CertificateStatus(str, Enum):
+    active = "active"
+    expired = "expired"
+    revoked = "revoked"
+
+
 class OrgRole(str, Enum):
-    admin = "admin"
-    manager = "manager"
+    super_ceo = "super_ceo"
+    ceo = "ceo"
+    superadmin = "superadmin"
+    hr = "hr"
+    sysadmin = "sysadmin"
+    team_lead = "team_lead"
+    project_manager = "project_manager"
+    developer = "developer"
+    founder = "founder"
     member = "member"
 
 
@@ -20,20 +33,11 @@ class TaskStatus(str, Enum):
 
 
 class TeamRole(str, Enum):
+    team_lead = "team_lead"
+    project_manager = "project_manager"
+    developer = "developer"
     member = "member"
-    lead = "lead"
 
-
-class SessionStatus(str, Enum):
-    active = "active"
-    stopped = "stopped"
-
-
-class ActivityType(str, Enum):
-    app = "app"
-    input = "input"
-    idle = "idle"
-    system = "system"
 
 
 class AuditAction(str, Enum):
@@ -68,3 +72,10 @@ class NotificationEvent(str, Enum):
 class ScorePeriod(str, Enum):
     daily = "daily"
     weekly = "weekly"
+
+
+class TaskPriority(str, Enum):
+    low = "low"
+    medium = "medium"
+    high = "high"
+    critical = "critical"

@@ -9,7 +9,33 @@ import {
 } from '@/api/reports'
 import { queryKeys } from '@/lib/queryKeys'
 
-export function useOrgKpi(orgId: string | null, params?: Record<string, unknown>) {
+type OrgKpiParams = {
+  start_date?: string
+  end_date?: string
+  team_id?: string
+  project_id?: string
+}
+
+type ProjectKpiParams = {
+  start_date?: string
+  end_date?: string
+}
+
+type OrgExportParams = {
+  export_format: string
+  start_date?: string
+  end_date?: string
+  team_id?: string
+  project_id?: string
+}
+
+type ProjectExportParams = {
+  export_format: string
+  start_date?: string
+  end_date?: string
+}
+
+export function useOrgKpi(orgId: string | null, params?: OrgKpiParams) {
   return useQuery({
     queryKey: queryKeys.reports.orgKpi(orgId!, params),
     queryFn: () => getOrgKpi(orgId!, params).then((r) => r.data as KpiReport),
@@ -17,7 +43,7 @@ export function useOrgKpi(orgId: string | null, params?: Record<string, unknown>
   })
 }
 
-export function useProjectKpi(orgId: string | null, params?: Record<string, unknown>) {
+export function useProjectKpi(orgId: string | null, params?: ProjectKpiParams) {
   return useQuery({
     queryKey: queryKeys.reports.projectKpi(orgId!, params),
     queryFn: () => getProjectKpi(orgId!, params).then((r) => r.data as KpiReport),
@@ -36,7 +62,7 @@ export function useReportExports(orgId: string | null) {
 export function useExportOrgKpi(orgId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (params: { format: string; from?: string; to?: string }) =>
+    mutationFn: (params: OrgExportParams) =>
       exportOrgKpi(orgId, params).then((r) => r.data as ReportExport),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.reports.exports(orgId) })
@@ -47,7 +73,7 @@ export function useExportOrgKpi(orgId: string) {
 export function useExportProjectKpi(orgId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (params: { format: string; project_id: string; from?: string; to?: string }) =>
+    mutationFn: (params: ProjectExportParams) =>
       exportProjectKpi(orgId, params).then((r) => r.data as ReportExport),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.reports.exports(orgId) })

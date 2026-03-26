@@ -34,3 +34,11 @@ export function googleLogin(idToken: string) {
 export function appleLogin(idToken: string, fullName?: string) {
   return api.post<TokenResponse>('/auth/apple', { id_token: idToken, full_name: fullName })
 }
+
+export function forgotPassword(email: string) {
+  return api.post('/auth/forgot-password', { email })
+}
+
+export function resetPassword(token: string, new_password: string) {
+  return api.post('/auth/reset-password', { token, new_password })
+}

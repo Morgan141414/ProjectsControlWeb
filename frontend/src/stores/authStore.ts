@@ -10,13 +10,23 @@ interface AuthState {
   fullName: string | null
   patronymic: string | null
   email: string | null
+  avatarUrl: string | null
+  isSuperAdmin: boolean
   isAuthenticated: boolean
   setAuth: (
     token: string,
     refreshToken: string | null,
-    user: { id: string; email: string; full_name: string; patronymic?: string },
+    user: {
+      id: string
+      email: string
+      full_name: string
+      patronymic?: string
+      is_superadmin?: boolean
+      avatar_url?: string | null
+    },
     storage?: StorageType,
   ) => void
+  setAvatarUrl: (url: string | null) => void
   logout: () => void
 }
 
@@ -29,6 +39,8 @@ export const useAuthStore = create<AuthState>()(
       fullName: null,
       patronymic: null,
       email: null,
+      avatarUrl: null,
+      isSuperAdmin: false,
       isAuthenticated: false,
 
       setAuth: (token, refreshToken, user, storage?: StorageType) => {
@@ -45,9 +57,13 @@ export const useAuthStore = create<AuthState>()(
           email: user.email,
           fullName: user.full_name,
           patronymic: user.patronymic ?? null,
+          avatarUrl: user.avatar_url ?? null,
+          isSuperAdmin: user.is_superadmin ?? false,
           isAuthenticated: true,
         })
       },
+
+      setAvatarUrl: (url) => set({ avatarUrl: url }),
 
       logout: () => {
         sessionStorage.removeItem('auth-storage')
@@ -58,6 +74,8 @@ export const useAuthStore = create<AuthState>()(
           fullName: null,
           patronymic: null,
           email: null,
+          avatarUrl: null,
+          isSuperAdmin: false,
           isAuthenticated: false,
         })
       },

@@ -9,10 +9,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from google.auth.transport.requests import Request as GoogleRequest
 from google.oauth2 import id_token as google_id_token
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from app.core.deps import get_db
+from app.core.deps import get_current_user, get_db
 from app.core.rate_limit import limiter
 from app.core.security import (
     create_access_token,
@@ -21,14 +22,17 @@ from app.core.security import (
     hash_refresh_token,
     verify_password,
 )
+from app.core.totp import generate_totp_secret, get_totp_uri, generate_qr_code_base64, verify_totp
 from app.core.time import utc_now_naive
 from app.models.token import FailedLoginAttempt, RefreshToken
 from app.models.user import User
 from app.schemas.auth import (
     AppleLoginRequest,
+    ForgotPasswordRequest,
     GoogleLoginRequest,
     RefreshTokenRequest,
     RegisterRequest,
+    ResetPasswordRequest,
     Token,
 )
 from app.schemas.user import UserResponse
@@ -255,3 +259,132 @@ def apple_login(payload: AppleLoginRequest, db: Session = Depends(get_db)) -> To
         logger.info("user_created_via_apple", user_id=user.id, email=email)
 
     return _issue_tokens(user.id, db)
+
+
+# ---------------------------------------------------------------------------
+# 2FA (TOTP) endpoints
+# ---------------------------------------------------------------------------
+
+class TwoFASetupResponse(BaseModel):
+    secret: str
+    uri: str
+    qr_code: str
+
+
+class TwoFAVerifyRequest(BaseModel):
+    code: str = Field(min_length=6, max_length=6)
+
+
+
+
+@router.post("/2fa/setup", response_model=TwoFASetupResponse)
+def setup_2fa(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> dict:
+    """Generate TOTP secret and QR code for 2FA setup."""
+    if user.totp_enabled:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="2FA is already enabled")
+
+    secret = generate_totp_secret()
+    uri = get_totp_uri(secret, user.email)
+    qr_code = generate_qr_code_base64(uri)
+
+    # Store secret (not yet enabled until verified)
+    user.totp_secret = secret
+    db.commit()
+
+    logger.info("2fa_setup_initiated", user_id=user.id)
+    return {"secret": secret, "uri": uri, "qr_code": qr_code}
+
+
+@router.post("/2fa/verify", status_code=status.HTTP_200_OK)
+def verify_2fa(
+    payload: TwoFAVerifyRequest,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> dict:
+    """Verify a TOTP code and enable 2FA for the user."""
+    if not user.totp_secret:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="2FA setup not initiated")
+
+    if not verify_totp(user.totp_secret, payload.code):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid TOTP code")
+
+    user.totp_enabled = True
+    db.commit()
+    logger.info("2fa_enabled", user_id=user.id)
+    return {"detail": "2FA enabled successfully"}
+
+
+@router.post("/2fa/disable", status_code=status.HTTP_200_OK)
+def disable_2fa(
+    payload: TwoFAVerifyRequest,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> dict:
+    """Disable 2FA for the user (requires valid TOTP code)."""
+    if not user.totp_enabled:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="2FA is not enabled")
+
+    if not verify_totp(user.totp_secret, payload.code):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid TOTP code")
+
+    user.totp_enabled = False
+    user.totp_secret = None
+    db.commit()
+    logger.info("2fa_disabled", user_id=user.id)
+    return {"detail": "2FA disabled successfully"}
+
+
+# ---------------------------------------------------------------------------
+# Password reset endpoints
+# ---------------------------------------------------------------------------
+
+@router.post("/forgot-password", status_code=status.HTTP_200_OK)
+@limiter.limit(settings.RATE_LIMIT_LOGIN)
+def forgot_password(
+    request: Request,
+    payload: ForgotPasswordRequest,
+    db: Session = Depends(get_db),
+) -> dict:
+    """Generate a password reset token and log it (email sending is a stub)."""
+    user = db.query(User).filter(User.email == payload.email).first()
+    if not user:
+        # Return success even if user not found to prevent email enumeration
+        return {"detail": "If the email exists, a reset link has been sent"}
+
+    token = secrets.token_urlsafe(32)
+    user.password_reset_token = token
+    user.password_reset_expires = utc_now_naive() + timedelta(hours=1)
+    db.commit()
+
+    # In production, send email. For now, log the token.
+    logger.info("password_reset_requested", user_id=user.id, reset_token=token)
+    return {"detail": "If the email exists, a reset link has been sent"}
+
+
+@router.post("/reset-password", status_code=status.HTTP_200_OK)
+def reset_password(
+    payload: ResetPasswordRequest,
+    db: Session = Depends(get_db),
+) -> dict:
+    """Reset password using a valid reset token."""
+    user = (
+        db.query(User)
+        .filter(User.password_reset_token == payload.token)
+        .first()
+    )
+    if not user:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired reset token")
+
+    if not user.password_reset_expires or user.password_reset_expires < utc_now_naive():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired reset token")
+
+    user.hashed_password = hash_password(payload.new_password)
+    user.password_reset_token = None
+    user.password_reset_expires = None
+    db.commit()
+
+    logger.info("password_reset_completed", user_id=user.id)
+    return {"detail": "Password has been reset successfully"}

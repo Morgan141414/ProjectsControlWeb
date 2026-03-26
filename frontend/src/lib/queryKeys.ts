@@ -1,45 +1,41 @@
-/** Centralised query-key factory – avoids magic strings and simplifies invalidation. */
+/** Centralised query-key factory. */
 
 export const queryKeys = {
-  // ── Profile ──────────────────────────────────────────────────
+  // -- Profile
   profile: {
     me: () => ['profile', 'me'] as const,
   },
 
-  // ── Org ──────────────────────────────────────────────────────
+  // -- Org
   org: {
+    myOrgs: () => ['orgs', 'my'] as const,
     detail: (orgId: string) => ['org', orgId] as const,
     joinRequests: (orgId: string) => ['org', orgId, 'join-requests'] as const,
   },
 
-  // ── Projects ─────────────────────────────────────────────────
+  // -- Projects
   projects: {
     list: (orgId: string) => ['projects', orgId] as const,
+    detail: (orgId: string, projectId: string) => ['projects', orgId, projectId] as const,
   },
 
-  // ── Tasks ────────────────────────────────────────────────────
+  // -- Tasks
   tasks: {
     today: (orgId: string) => ['tasks', orgId, 'today'] as const,
   },
 
-  // ── Teams ────────────────────────────────────────────────────
+  // -- Teams
   teams: {
     list: (orgId: string) => ['teams', orgId] as const,
     my: (orgId: string) => ['teams', orgId, 'me'] as const,
   },
 
-  // ── Users ────────────────────────────────────────────────────
+  // -- Users
   users: {
     list: (orgId: string) => ['users', orgId] as const,
   },
 
-  // ── Sessions ─────────────────────────────────────────────────
-  sessions: {
-    my: (orgId: string) => ['sessions', orgId, 'me'] as const,
-    org: (orgId: string) => ['sessions', orgId, 'all'] as const,
-  },
-
-  // ── Reports ──────────────────────────────────────────────────
+  // -- Reports
   reports: {
     orgKpi: (orgId: string, params?: Record<string, unknown>) =>
       ['reports', orgId, 'org-kpi', params ?? {}] as const,
@@ -48,15 +44,7 @@ export const queryKeys = {
     exports: (orgId: string) => ['reports', orgId, 'exports'] as const,
   },
 
-  // ── Metrics ──────────────────────────────────────────────────
-  metrics: {
-    session: (orgId: string, sessionId: string) =>
-      ['metrics', orgId, 'session', sessionId] as const,
-    user: (orgId: string, userId: string, params?: Record<string, unknown>) =>
-      ['metrics', orgId, 'user', userId, params ?? {}] as const,
-  },
-
-  // ── AI ───────────────────────────────────────────────────────
+  // -- AI
   ai: {
     kpi: (orgId: string, params?: Record<string, unknown>) =>
       ['ai', orgId, 'kpi', params ?? {}] as const,
@@ -64,34 +52,46 @@ export const queryKeys = {
       ['ai', orgId, 'scorecards', params ?? {}] as const,
   },
 
-  // ── Audit ────────────────────────────────────────────────────
+  // -- Audit
   audit: {
     list: (orgId: string) => ['audit', orgId] as const,
   },
 
-  // ── Privacy ──────────────────────────────────────────────────
+  // -- Privacy
   privacy: {
     rules: (orgId: string) => ['privacy', orgId, 'rules'] as const,
   },
 
-  // ── Consent ──────────────────────────────────────────────────
+  // -- Consent
   consent: {
     status: (orgId: string) => ['consent', orgId] as const,
   },
 
-  // ── Notifications ────────────────────────────────────────────
+  // -- Notifications
   notifications: {
     hooks: (orgId: string) => ['notifications', orgId, 'hooks'] as const,
   },
 
-  // ── Performance ──────────────────────────────────────────────
-  performance: {
-    activityPerTask: (orgId: string, params?: Record<string, unknown>) =>
-      ['performance', orgId, 'activity-per-task', params ?? {}] as const,
-  },
-
-  // ── Schedules ────────────────────────────────────────────────
+  // -- Schedules
   schedules: {
     list: (orgId: string) => ['schedules', orgId] as const,
+  },
+
+  // -- Board
+  board: {
+    columns: (orgId: string, projectId: string) =>
+      ['board', orgId, projectId, 'columns'] as const,
+    tasks: (orgId: string, projectId: string) =>
+      ['board', orgId, projectId, 'tasks'] as const,
+    task: (orgId: string, projectId: string, taskId: string) =>
+      ['board', orgId, projectId, 'tasks', taskId] as const,
+    stats: (orgId: string, projectId: string) =>
+      ['board', orgId, projectId, 'stats'] as const,
+    comments: (orgId: string, taskId: string) =>
+      ['board', orgId, 'comments', taskId] as const,
+    checklist: (orgId: string, taskId: string) =>
+      ['board', orgId, 'checklist', taskId] as const,
+    attachments: (orgId: string, taskId: string) =>
+      ['board', orgId, 'attachments', taskId] as const,
   },
 } as const

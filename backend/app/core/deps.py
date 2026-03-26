@@ -10,6 +10,17 @@ from app.models.user import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
+# Role groups for permission checks
+MANAGEMENT_ROLES = {OrgRole.super_ceo, OrgRole.ceo}
+ADMIN_ROLES = {OrgRole.super_ceo, OrgRole.ceo, OrgRole.superadmin}
+HR_ROLES = {OrgRole.super_ceo, OrgRole.ceo, OrgRole.hr}
+PROJECT_ROLES = {OrgRole.super_ceo, OrgRole.ceo, OrgRole.team_lead, OrgRole.project_manager}
+ALL_STAFF_ROLES = {
+    OrgRole.super_ceo, OrgRole.ceo, OrgRole.superadmin, OrgRole.hr,
+    OrgRole.sysadmin, OrgRole.team_lead, OrgRole.project_manager,
+    OrgRole.developer, OrgRole.founder, OrgRole.member,
+}
+
 
 def get_db():
     db = SessionLocal()
@@ -74,3 +85,13 @@ def require_role(membership: OrgMembership, allowed_roles: set[OrgRole]) -> None
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Insufficient permissions",
         )
+
+
+def require_superadmin(user: User = Depends(get_current_user)) -> User:
+    """FastAPI dependency that ensures the current user is a platform superadmin."""
+    if not user.is_superadmin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Superadmin access required",
+        )
+    return user

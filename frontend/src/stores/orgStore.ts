@@ -1,22 +1,62 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import type { OrgRole } from '@/types'
+
+export interface OrgMembership {
+  orgId: string
+  orgName: string
+  role: OrgRole
+  logoUrl?: string
+}
 
 interface OrgState {
-  orgId: string | null
-  orgName: string | null
-  setOrg: (orgId: string, orgName: string) => void
+  /** All orgs the user belongs to */
+  orgs: OrgMembership[]
+  /** Currently active org id, or null for personal dashboard */
+  activeOrgId: string | null
+
+  // Computed-like helpers
+  activeOrg: () => OrgMembership | null
+  activeOrgRole: () => OrgRole | null
+
+  // Actions
+  setOrgs: (orgs: OrgMembership[]) => void
+  addOrg: (org: OrgMembership) => void
+  setActiveOrg: (orgId: string | null) => void
   clear: () => void
 }
 
 export const useOrgStore = create<OrgState>()(
   persist(
-    (set) => ({
-      orgId: null,
-      orgName: null,
+    (set, get) => ({
+      orgs: [],
+      activeOrgId: null,
 
-      setOrg: (orgId, orgName) => set({ orgId, orgName }),
+      activeOrg: () => {
+        const { orgs, activeOrgId } = get()
+        return orgs.find((o) => o.orgId === activeOrgId) ?? null
+      },
 
-      clear: () => set({ orgId: null, orgName: null }),
+      activeOrgRole: () => {
+        const org = get().activeOrg()
+        return org?.role ?? null
+      },
+
+      setOrgs: (orgs) => {
+        const { activeOrgId } = get()
+        // If active org no longer in list, reset to null
+        const stillExists = orgs.some((o) => o.orgId === activeOrgId)
+        set({ orgs, activeOrgId: stillExists ? activeOrgId : (orgs.length > 0 ? orgs[0].orgId : null) })
+      },
+
+      addOrg: (org) => {
+        const { orgs } = get()
+        set({ orgs: [...orgs, org], activeOrgId: org.orgId })
+      },
+
+      setActiveOrg: (orgId) => set({ activeOrgId: orgId }),
+
+      clear: () => set({ orgs: [], activeOrgId: null }),
     }),
     { name: 'org-storage' },
   ),

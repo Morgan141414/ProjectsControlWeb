@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.audit import log_audit
-from app.core.deps import get_current_user, get_db, get_org_membership, require_role
-from app.models.enums import AuditAction, OrgRole
+from app.core.deps import get_current_user, get_db, get_org_membership, require_role, ADMIN_ROLES
+from app.models.enums import AuditAction
 from app.models.privacy import PrivacyRule
 from app.models.user import User
 from app.schemas.privacy import PrivacyRuleCreate, PrivacyRuleResponse, PrivacyRuleUpdate
@@ -18,7 +18,7 @@ def list_rules(
     current_user: User = Depends(get_current_user),
 ) -> list[PrivacyRule]:
     membership = get_org_membership(org_id, current_user, db)
-    require_role(membership, {OrgRole.admin, OrgRole.manager})
+    require_role(membership, ADMIN_ROLES)
 
     return (
         db.query(PrivacyRule)
@@ -36,7 +36,7 @@ def create_rule(
     current_user: User = Depends(get_current_user),
 ) -> PrivacyRule:
     membership = get_org_membership(org_id, current_user, db)
-    require_role(membership, {OrgRole.admin, OrgRole.manager})
+    require_role(membership, ADMIN_ROLES)
 
     rule = PrivacyRule(
         org_id=org_id,
@@ -69,7 +69,7 @@ def update_rule(
     current_user: User = Depends(get_current_user),
 ) -> PrivacyRule:
     membership = get_org_membership(org_id, current_user, db)
-    require_role(membership, {OrgRole.admin, OrgRole.manager})
+    require_role(membership, ADMIN_ROLES)
 
     rule = db.get(PrivacyRule, rule_id)
     if not rule or rule.org_id != org_id:
@@ -103,7 +103,7 @@ def delete_rule(
     current_user: User = Depends(get_current_user),
 ) -> None:
     membership = get_org_membership(org_id, current_user, db)
-    require_role(membership, {OrgRole.admin, OrgRole.manager})
+    require_role(membership, ADMIN_ROLES)
 
     rule = db.get(PrivacyRule, rule_id)
     if not rule or rule.org_id != org_id:

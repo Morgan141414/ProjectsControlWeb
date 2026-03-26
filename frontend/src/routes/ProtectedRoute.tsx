@@ -22,7 +22,7 @@ export function ProtectedRoute() {
         if (parsed?.state?.token) {
           return (
             <div className="flex h-screen items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-[#0075FF]" />
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-[#0f8f5d]" />
             </div>
           )
         }

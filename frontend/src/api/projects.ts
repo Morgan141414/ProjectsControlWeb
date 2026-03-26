@@ -5,6 +5,10 @@ export function listProjects(orgId: string) {
   return api.get<Project[]>(`/orgs/${orgId}/projects`)
 }
 
+export function getProject(orgId: string, projectId: string) {
+  return api.get<Project>(`/orgs/${orgId}/projects/${projectId}`)
+}
+
 export function createProject(orgId: string, name: string, description?: string) {
   const body: Record<string, string> = { name }
   if (description != null) body.description = description

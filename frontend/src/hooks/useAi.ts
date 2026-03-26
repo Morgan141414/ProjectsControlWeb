@@ -3,6 +3,15 @@ import type { KpiReport, AiScorecard } from '@/types'
 import { getAiKpi, getAiScorecards } from '@/api/ai'
 import { queryKeys } from '@/lib/queryKeys'
 
+type AiScorecardParams = {
+  period: string
+  as_of?: string
+  user_id?: string
+  mode?: string
+  role_profile?: string
+  trend_limit?: number
+}
+
 export function useAiKpi(orgId: string | null, params?: Record<string, unknown>) {
   return useQuery({
     queryKey: queryKeys.ai.kpi(orgId!, params),
@@ -13,7 +22,7 @@ export function useAiKpi(orgId: string | null, params?: Record<string, unknown>)
 
 export function useAiScorecards(
   orgId: string | null,
-  params?: Record<string, unknown>,
+  params?: AiScorecardParams,
 ) {
   return useQuery({
     queryKey: queryKeys.ai.scorecards(orgId!, params),

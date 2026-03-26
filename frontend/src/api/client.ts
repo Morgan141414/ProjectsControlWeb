@@ -67,7 +67,7 @@ api.interceptors.response.use(
         localStorage.removeItem('auth-storage')
         sessionStorage.removeItem('auth-storage')
         useAuthStore.getState().logout()
-window.location.replace('/login')
+if (!['/login', '/register'].includes(window.location.pathname)) window.location.replace('/login')
         return Promise.reject(error)
       }
 
@@ -112,7 +112,7 @@ window.location.replace('/login')
         localStorage.removeItem('auth-storage')
         sessionStorage.removeItem('auth-storage')
         useAuthStore.getState().logout()
-window.location.replace('/login')
+if (!['/login', '/register'].includes(window.location.pathname)) window.location.replace('/login')
         return Promise.reject(refreshError)
       } finally {
         isRefreshing = false

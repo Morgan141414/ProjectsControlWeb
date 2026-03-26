@@ -39,7 +39,7 @@ export function usePrivacyRules(orgId: string | null) {
 export function useCreatePrivacyRule(orgId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (data: Record<string, unknown>) =>
+    mutationFn: (data: { target: string; match_type: string; pattern: string; action: string }) =>
       createPrivacyRule(orgId, data).then((r) => r.data as PrivacyRule),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.privacy.rules(orgId) })
@@ -69,7 +69,7 @@ export function useNotificationHooks(orgId: string | null) {
 export function useCreateNotificationHook(orgId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (data: Record<string, unknown>) =>
+    mutationFn: (data: { event_type: string; url: string }) =>
       createNotificationHook(orgId, data).then((r) => r.data as NotificationHook),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.notifications.hooks(orgId) })

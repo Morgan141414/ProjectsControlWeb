@@ -1,5 +1,9 @@
 import api from './client'
-import type { Org, JoinRequest } from '../types'
+import type { Org, OrgWithRole, JoinRequest } from '../types'
+
+export function listMyOrgs() {
+  return api.get<OrgWithRole[]>('/orgs')
+}
 
 export function createOrg(name: string) {
   return api.post<Org>('/orgs', { name })
