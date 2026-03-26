@@ -10,6 +10,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+<<<<<<< HEAD
   server: {
     proxy: {
       '/api': {
@@ -18,4 +19,6 @@ export default defineConfig({
       },
     },
   },
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 })

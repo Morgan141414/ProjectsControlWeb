@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router'
 import { ProtectedRoute } from './ProtectedRoute'
+<<<<<<< HEAD
 import { ShellGuard } from './ShellGuard'
 
 // ── Auth pages ──
@@ -71,11 +72,24 @@ const EmergencyDashboard = lazy(() => import('@/pages/emergency/EmergencyDashboa
 const IncidentsPage = lazy(() => import('@/pages/emergency/IncidentsPage'))
 const ForensicLogsPage = lazy(() => import('@/pages/emergency/ForensicLogsPage'))
 const AccessHistoryPage = lazy(() => import('@/pages/emergency/AccessHistoryPage'))
+=======
+
+const LoginPage = lazy(() => import('@/pages/LoginPage'))
+const RegisterPage = lazy(() => import('@/pages/RegisterPage'))
+const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
+const ProfilePage = lazy(() => import('@/pages/ProfilePage'))
+const SettingsPage = lazy(() => import('@/pages/SettingsPage'))
+const ActivityPage = lazy(() => import('@/pages/ActivityPage'))
+const AdminConsolePage = lazy(() => import('@/pages/AdminConsolePage'))
+const ReportsPage = lazy(() => import('@/pages/ReportsPage'))
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
 function SuspenseWrapper({ children }: { children: React.ReactNode }) {
   return (
     <Suspense
       fallback={
+<<<<<<< HEAD
         <div className="space-y-6 p-6 animate-in fade-in duration-300">
           {/* Header skeleton */}
           <div className="space-y-3">
@@ -111,6 +125,10 @@ function SuspenseWrapper({ children }: { children: React.ReactNode }) {
               ))}
             </div>
           </div>
+=======
+        <div className="flex h-screen items-center justify-center">
+          <div className="text-muted-foreground">Загрузка...</div>
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
         </div>
       }
     >
@@ -119,15 +137,19 @@ function SuspenseWrapper({ children }: { children: React.ReactNode }) {
   )
 }
 
+<<<<<<< HEAD
 function W({ children }: { children: React.ReactNode }) {
   return <SuspenseWrapper>{children}</SuspenseWrapper>
 }
 
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <Navigate to="/dashboard" replace />,
   },
+<<<<<<< HEAD
 
   // ── Public routes ──
   { path: '/login', element: <W><LoginPage /></W> },
@@ -264,4 +286,83 @@ export const router = createBrowserRouter([
 
   // ── 404 ──
   { path: '*', element: <W><NotFoundPage /></W> },
+=======
+  {
+    path: '/login',
+    element: (
+      <SuspenseWrapper>
+        <LoginPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    path: '/register',
+    element: (
+      <SuspenseWrapper>
+        <RegisterPage />
+      </SuspenseWrapper>
+    ),
+  },
+  {
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: '/dashboard',
+        element: (
+          <SuspenseWrapper>
+            <DashboardPage />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: '/profile',
+        element: (
+          <SuspenseWrapper>
+            <ProfilePage />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: '/settings',
+        element: (
+          <SuspenseWrapper>
+            <SettingsPage />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: '/activity',
+        element: (
+          <SuspenseWrapper>
+            <ActivityPage />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: '/admin',
+        element: (
+          <SuspenseWrapper>
+            <AdminConsolePage />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: '/reports',
+        element: (
+          <SuspenseWrapper>
+            <ReportsPage />
+          </SuspenseWrapper>
+        ),
+      },
+    ],
+  },
+  {
+    path: '*',
+    element: (
+      <SuspenseWrapper>
+        <NotFoundPage />
+      </SuspenseWrapper>
+    ),
+  },
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 ])

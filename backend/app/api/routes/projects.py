@@ -2,7 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.audit import log_audit
+<<<<<<< HEAD
 from app.core.deps import get_current_user, get_db, get_org_membership, require_role, PROJECT_ROLES, ADMIN_ROLES, MANAGEMENT_ROLES
+=======
+from app.core.deps import get_current_user, get_db, get_org_membership, require_role
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 from app.models.enums import AuditAction, OrgRole
 from app.models.project import Project
 from app.models.team import Team, TeamMembership
@@ -13,9 +17,14 @@ router = APIRouter(prefix="/orgs/{org_id}/projects", tags=["projects"])
 
 
 def _project_visibility_query(org_id: str, db: Session, current_user: User):
+<<<<<<< HEAD
     """Super_ceo, ceo, superadmin see all projects. Others see only their team's projects."""
     membership = get_org_membership(org_id, current_user, db)
     if membership.role in {OrgRole.super_ceo, OrgRole.ceo, OrgRole.superadmin, OrgRole.founder}:
+=======
+    membership = get_org_membership(org_id, current_user, db)
+    if membership.role in {OrgRole.admin, OrgRole.manager}:
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
         return db.query(Project).filter(Project.org_id == org_id)
 
     team_ids = (
@@ -39,7 +48,11 @@ def create_project(
     current_user: User = Depends(get_current_user),
 ) -> Project:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     require_role(membership, PROJECT_ROLES | ADMIN_ROLES)
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     project = Project(org_id=org_id, name=payload.name, description=payload.description)
     db.add(project)
@@ -91,7 +104,11 @@ def update_project(
     current_user: User = Depends(get_current_user),
 ) -> Project:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     require_role(membership, PROJECT_ROLES | ADMIN_ROLES)
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     project = db.get(Project, project_id)
     if not project or project.org_id != org_id:

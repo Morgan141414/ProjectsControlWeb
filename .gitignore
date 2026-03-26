@@ -57,4 +57,7 @@ desktop.ini
 # Node.js
 node_modules/
 frontend/dist/
+<<<<<<< HEAD
 .vite/
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb

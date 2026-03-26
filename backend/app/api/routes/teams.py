@@ -2,7 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.audit import log_audit
+<<<<<<< HEAD
 from app.core.deps import get_current_user, get_db, get_org_membership, require_role, PROJECT_ROLES
+=======
+from app.core.deps import get_current_user, get_db, get_org_membership, require_role
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 from app.models.enums import AuditAction, OrgRole, TeamRole
 from app.models.org import OrgMembership
 from app.models.project import Project
@@ -21,7 +25,11 @@ def create_team(
     current_user: User = Depends(get_current_user),
 ) -> Team:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     require_role(membership, PROJECT_ROLES)
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     project_id = None
     if payload.project_id:
@@ -86,7 +94,11 @@ def update_team(
     current_user: User = Depends(get_current_user),
 ) -> Team:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     require_role(membership, PROJECT_ROLES)
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     team = db.get(Team, team_id)
     if not team or team.org_id != org_id:
@@ -125,7 +137,11 @@ def add_team_member(
     current_user: User = Depends(get_current_user),
 ) -> Team:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     require_role(membership, PROJECT_ROLES)
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     team = db.get(Team, team_id)
     if not team or team.org_id != org_id:

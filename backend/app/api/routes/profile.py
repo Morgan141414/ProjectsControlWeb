@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import hashlib
 import uuid
 from pathlib import Path
@@ -9,11 +10,18 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.core.deps import get_current_user, get_db
 from app.models.org import OrgMembership
+=======
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from app.core.deps import get_current_user, get_db
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 from app.models.user import User
 from app.schemas.user import UserProfileUpdate, UserResponse
 
 router = APIRouter(prefix="/users", tags=["users"])
 
+<<<<<<< HEAD
 AVATAR_DIR = Path(settings.STORAGE_PATH).parent / "avatars"
 ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
 MAX_AVATAR_BYTES = 10 * 1024 * 1024  # 10 MB
@@ -41,6 +49,14 @@ def get_me(
     current_user: User = Depends(get_current_user),
 ) -> UserResponse:
     return _user_response(current_user, db)
+=======
+
+@router.get("/me", response_model=UserResponse)
+def get_me(
+    current_user: User = Depends(get_current_user),
+) -> User:
+    return current_user
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
 
 @router.patch("/me", response_model=UserResponse)
@@ -48,7 +64,11 @@ def update_me(
     payload: UserProfileUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+<<<<<<< HEAD
 ) -> UserResponse:
+=======
+) -> User:
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     data = payload.model_dump(exclude_unset=True)
     for key, value in data.items():
         setattr(current_user, key, value)
@@ -56,6 +76,7 @@ def update_me(
     db.add(current_user)
     db.commit()
     db.refresh(current_user)
+<<<<<<< HEAD
     return _user_response(current_user, db)
 
 
@@ -96,3 +117,6 @@ def upload_avatar(
     db.commit()
 
     return {"avatar_url": avatar_url}
+=======
+    return current_user
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb

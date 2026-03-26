@@ -1,11 +1,14 @@
 import api from './client'
 
+<<<<<<< HEAD
 interface TokenResponse {
   access_token: string
   refresh_token: string | null
   token_type: string
 }
 
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 export function register(email: string, password: string, full_name: string) {
   return api.post('/auth/register', { email, password, full_name })
 }
@@ -14,11 +17,16 @@ export function login(email: string, password: string) {
   const params = new URLSearchParams()
   params.append('username', email)
   params.append('password', password)
+<<<<<<< HEAD
   return api.post<TokenResponse>('/auth/login', params, {
+=======
+  return api.post<{ access_token: string }>('/auth/login', params, {
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
   })
 }
 
+<<<<<<< HEAD
 export function refreshToken(refresh_token: string) {
   return api.post<TokenResponse>('/auth/refresh', { refresh_token })
 }
@@ -41,4 +49,8 @@ export function forgotPassword(email: string) {
 
 export function resetPassword(token: string, new_password: string) {
   return api.post('/auth/reset-password', { token, new_password })
+=======
+export function googleLogin(idToken: string) {
+  return api.post('/auth/google', { id_token: idToken })
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 }

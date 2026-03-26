@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """FastAPI application entrypoint with production middleware stack."""
 
 import structlog
@@ -41,10 +42,31 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # ---------------------------------------------------------------------------
 # Middleware stack (order matters — outermost first)
 # ---------------------------------------------------------------------------
+=======
+import logging
+import traceback
+
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
+from app.api.routes import api_router
+from app.core.config import settings
+from app.core.retention import cleanup_activity_events, cleanup_recordings
+from app.core.scheduler import shutdown_scheduler, start_scheduler
+from app.db.base import Base
+from app.db.session import SessionLocal, engine
+
+logger = logging.getLogger(__name__)
+
+app = FastAPI(title=settings.PROJECT_NAME)
+
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[origin.strip() for origin in settings.CORS_ORIGINS.split(",") if origin.strip()],
     allow_credentials=True,
+<<<<<<< HEAD
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=[
         "Authorization",
@@ -73,12 +95,25 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
         error=str(exc),
         exc_info=True,
     )
+=======
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Return a JSON body for any unhandled server error."""
+    logger.error("Unhandled exception on %s %s: %s", request.method, request.url.path, exc)
+    logger.debug(traceback.format_exc())
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     return JSONResponse(
         status_code=500,
         content={"detail": "Internal server error"},
     )
 
 
+<<<<<<< HEAD
 # ---------------------------------------------------------------------------
 # Lifecycle events
 # ---------------------------------------------------------------------------
@@ -92,11 +127,23 @@ def on_startup() -> None:
 
     start_scheduler()
     logger.info("application_started", environment=settings.ENVIRONMENT)
+=======
+@app.on_event("startup")
+def on_startup() -> None:
+    Base.metadata.create_all(bind=engine)
+    with SessionLocal() as db:
+        deleted_recordings = cleanup_recordings(db)
+        deleted_events = cleanup_activity_events(db)
+        if deleted_recordings or deleted_events:
+            db.commit()
+    start_scheduler()
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
 
 @app.on_event("shutdown")
 def on_shutdown() -> None:
     shutdown_scheduler()
+<<<<<<< HEAD
     logger.info("application_stopped")
 
 
@@ -129,3 +176,13 @@ def readiness():
 # Routes — all under /api/v1 prefix
 # ---------------------------------------------------------------------------
 app.include_router(api_router, prefix="/api/v1")
+=======
+
+
+@app.get("/")
+def root() -> dict:
+    return {"status": "ok"}
+
+
+app.include_router(api_router)
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb

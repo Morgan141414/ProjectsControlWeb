@@ -8,6 +8,7 @@ from app.models.enums import OrgRole
 from app.models.org import OrgMembership
 from app.models.user import User
 
+<<<<<<< HEAD
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 # Role groups for permission checks
@@ -20,6 +21,9 @@ ALL_STAFF_ROLES = {
     OrgRole.sysadmin, OrgRole.team_lead, OrgRole.project_manager,
     OrgRole.developer, OrgRole.founder, OrgRole.member,
 }
+=======
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
 
 def get_db():
@@ -85,6 +89,7 @@ def require_role(membership: OrgMembership, allowed_roles: set[OrgRole]) -> None
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Insufficient permissions",
         )
+<<<<<<< HEAD
 
 
 def require_superadmin(user: User = Depends(get_current_user)) -> User:
@@ -95,3 +100,5 @@ def require_superadmin(user: User = Depends(get_current_user)) -> User:
             detail="Superadmin access required",
         )
     return user
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb

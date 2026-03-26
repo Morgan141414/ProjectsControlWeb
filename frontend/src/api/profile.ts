@@ -8,6 +8,7 @@ export function getMe() {
 export function updateMe(data: Partial<Omit<User, 'id' | 'email'>>) {
   return api.patch<User>('/users/me', data)
 }
+<<<<<<< HEAD
 
 export function uploadAvatar(file: File) {
   const form = new FormData()
@@ -16,3 +17,5 @@ export function uploadAvatar(file: File) {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
 }
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb

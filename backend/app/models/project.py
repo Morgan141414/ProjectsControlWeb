@@ -18,5 +18,8 @@ class Project(Base):
 
     organization = relationship("Organization", back_populates="projects")
     teams = relationship("Team", back_populates="project")
+<<<<<<< HEAD
     columns = relationship("TaskColumn", back_populates="project", cascade="all, delete-orphan", order_by="TaskColumn.position")
     tasks = relationship("Task", back_populates="project")
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb

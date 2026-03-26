@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """Authentication endpoints: register, login, refresh, logout, Google OAuth."""
 
 import secrets
@@ -93,6 +94,28 @@ def _issue_tokens(user_id: str, db: Session) -> Token:
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 @limiter.limit(settings.RATE_LIMIT_REGISTER)
 def register(request: Request, payload: RegisterRequest, db: Session = Depends(get_db)) -> User:
+=======
+import secrets
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
+from google.auth.transport.requests import Request
+from google.oauth2 import id_token as google_id_token
+from sqlalchemy.orm import Session
+
+from app.core.config import settings
+from app.core.deps import get_db
+from app.core.security import create_access_token, hash_password, verify_password
+from app.models.user import User
+from app.schemas.auth import GoogleLoginRequest, RegisterRequest, Token
+from app.schemas.user import UserResponse
+
+router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> User:
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     existing = db.query(User).filter(User.email == payload.email).first()
     if existing:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
@@ -105,11 +128,15 @@ def register(request: Request, payload: RegisterRequest, db: Session = Depends(g
     db.add(user)
     db.commit()
     db.refresh(user)
+<<<<<<< HEAD
     logger.info("user_registered", user_id=user.id, email=user.email)
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     return user
 
 
 @router.post("/login", response_model=Token)
+<<<<<<< HEAD
 @limiter.limit(settings.RATE_LIMIT_LOGIN)
 def login(
     request: Request,
@@ -168,6 +195,18 @@ def logout(payload: RefreshTokenRequest, db: Session = Depends(get_db)) -> None:
     if stored:
         stored.revoked = True
         db.commit()
+=======
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
+) -> Token:
+    user = db.query(User).filter(User.email == form_data.username).first()
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+
+    token = create_access_token(user.id)
+    return Token(access_token=token)
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
 
 @router.post("/google", response_model=Token)
@@ -181,7 +220,11 @@ def google_login(payload: GoogleLoginRequest, db: Session = Depends(get_db)) -> 
     try:
         info = google_id_token.verify_oauth2_token(
             payload.id_token,
+<<<<<<< HEAD
             GoogleRequest(),
+=======
+            Request(),
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
             settings.GOOGLE_OAUTH_CLIENT_ID,
         )
     except Exception as exc:  # noqa: BLE001
@@ -192,9 +235,21 @@ def google_login(payload: GoogleLoginRequest, db: Session = Depends(get_db)) -> 
 
     email = info.get("email")
     if not email:
+<<<<<<< HEAD
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Google account email missing")
     if info.get("email_verified") is False:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Google email not verified")
+=======
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Google account email missing",
+        )
+    if info.get("email_verified") is False:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Google email not verified",
+        )
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     user = db.query(User).filter(User.email == email).first()
     if not user:
@@ -208,6 +263,7 @@ def google_login(payload: GoogleLoginRequest, db: Session = Depends(get_db)) -> 
         db.add(user)
         db.commit()
         db.refresh(user)
+<<<<<<< HEAD
         logger.info("user_created_via_google", user_id=user.id, email=email)
 
     return _issue_tokens(user.id, db)
@@ -388,3 +444,8 @@ def reset_password(
 
     logger.info("password_reset_completed", user_id=user.id)
     return {"detail": "Password has been reset successfully"}
+=======
+
+    token = create_access_token(user.id)
+    return Token(access_token=token)
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb

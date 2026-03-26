@@ -1,13 +1,23 @@
 import axios from 'axios'
+<<<<<<< HEAD
 import { useAuthStore } from '@/stores/authStore'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1',
+=======
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
   timeout: 15000,
 })
 
 api.interceptors.request.use((config) => {
   try {
+<<<<<<< HEAD
+=======
+    // Check localStorage first (persistent / "remember me"), then sessionStorage (tab-only)
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     const raw = localStorage.getItem('auth-storage') || sessionStorage.getItem('auth-storage')
     if (raw) {
       const parsed = JSON.parse(raw)
@@ -22,6 +32,7 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+<<<<<<< HEAD
 // Refresh token logic: on 401, try to refresh before logging out
 let isRefreshing = false
 let failedQueue: Array<{
@@ -119,6 +130,16 @@ if (!['/login', '/register'].includes(window.location.pathname)) window.location
       }
     }
 
+=======
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      localStorage.removeItem('auth-storage')
+      sessionStorage.removeItem('auth-storage')
+      window.location.href = '/login'
+    }
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     return Promise.reject(error)
   },
 )

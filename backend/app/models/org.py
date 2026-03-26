@@ -1,6 +1,10 @@
 from datetime import datetime
 
+<<<<<<< HEAD
 from sqlalchemy import Boolean, DateTime, Enum as SAEnum, ForeignKey, Integer, String, Text
+=======
+from sqlalchemy import DateTime, Enum as SAEnum, ForeignKey, String
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -17,6 +21,7 @@ class Organization(Base):
     join_code: Mapped[str] = mapped_column(
         String(16), unique=True, index=True, default=new_join_code
     )
+<<<<<<< HEAD
     description: Mapped[str | None] = mapped_column(Text)
     industry: Mapped[str | None] = mapped_column(String(200))
     website: Mapped[str | None] = mapped_column(String(500))
@@ -31,6 +36,10 @@ class Organization(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     owner = relationship("User", foreign_keys=[owner_id])
+=======
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     memberships = relationship(
         "OrgMembership", back_populates="organization", cascade="all, delete-orphan"
     )

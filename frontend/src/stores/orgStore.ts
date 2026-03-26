@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+<<<<<<< HEAD
 import type { OrgRole } from '@/types'
 
 export interface OrgMembership {
@@ -23,11 +24,19 @@ interface OrgState {
   setOrgs: (orgs: OrgMembership[]) => void
   addOrg: (org: OrgMembership) => void
   setActiveOrg: (orgId: string | null) => void
+=======
+
+interface OrgState {
+  orgId: string | null
+  orgName: string | null
+  setOrg: (orgId: string, orgName: string) => void
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
   clear: () => void
 }
 
 export const useOrgStore = create<OrgState>()(
   persist(
+<<<<<<< HEAD
     (set, get) => ({
       orgs: [],
       activeOrgId: null,
@@ -57,6 +66,15 @@ export const useOrgStore = create<OrgState>()(
       setActiveOrg: (orgId) => set({ activeOrgId: orgId }),
 
       clear: () => set({ orgs: [], activeOrgId: null }),
+=======
+    (set) => ({
+      orgId: null,
+      orgName: null,
+
+      setOrg: (orgId, orgName) => set({ orgId, orgName }),
+
+      clear: () => set({ orgId: null, orgName: null }),
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     }),
     { name: 'org-storage' },
   ),

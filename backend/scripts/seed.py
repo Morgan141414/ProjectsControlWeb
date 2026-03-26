@@ -1,17 +1,32 @@
 import argparse
+<<<<<<< HEAD
 from datetime import date
+=======
+from datetime import date, timedelta
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
+<<<<<<< HEAD
 from app.db.session import SessionLocal
 from app.models.enums import OrgRole, TaskStatus
+=======
+from app.core.time import utc_now_naive
+from app.db.session import SessionLocal
+from app.models.activity import ActivityEvent, ScreenSession
+from app.models.enums import ActivityType, OrgRole, SessionStatus, TaskStatus
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 from app.models.org import OrgMembership, Organization
 from app.models.project import Project
 from app.models.task import Task
 from app.models.team import Team, TeamMembership
 from app.models.user import User
+<<<<<<< HEAD
+=======
+from app.utils.ids import new_id
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
 
 def get_or_create_user(db: Session, email: str, full_name: str, password: str) -> User:
@@ -39,8 +54,13 @@ def seed(db: Session) -> dict[str, str]:
 
     db.add_all(
         [
+<<<<<<< HEAD
             OrgMembership(org_id=org.id, user_id=admin.id, role=OrgRole.ceo),
             OrgMembership(org_id=org.id, user_id=manager.id, role=OrgRole.developer),
+=======
+            OrgMembership(org_id=org.id, user_id=admin.id, role=OrgRole.admin),
+            OrgMembership(org_id=org.id, user_id=manager.id, role=OrgRole.manager),
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
             OrgMembership(org_id=org.id, user_id=member.id, role=OrgRole.member),
         ]
     )
@@ -85,6 +105,46 @@ def seed(db: Session) -> dict[str, str]:
     ]
     db.add_all(tasks)
 
+<<<<<<< HEAD
+=======
+    session = ScreenSession(
+        org_id=org.id,
+        user_id=member.id,
+        status=SessionStatus.active,
+        started_at=utc_now_naive() - timedelta(hours=2),
+        device_name="Workstation",
+        os_name="Windows",
+    )
+    db.add(session)
+    db.flush()
+
+    events = []
+    base = session.started_at
+    for index in range(6):
+        events.append(
+            ActivityEvent(
+                session_id=session.id,
+                org_id=org.id,
+                user_id=member.id,
+                event_type=ActivityType.app,
+                captured_at=base + timedelta(minutes=index * 10),
+                app_name="VS Code",
+                window_title="ProjectsControl",
+            )
+        )
+    events.append(
+        ActivityEvent(
+            session_id=session.id,
+            org_id=org.id,
+            user_id=member.id,
+            event_type=ActivityType.idle,
+            captured_at=base + timedelta(minutes=70),
+            idle_seconds=300,
+        )
+    )
+    db.add_all(events)
+
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     return {
         "org_id": org.id,
         "join_code": org.join_code,
@@ -104,6 +164,11 @@ def main() -> None:
     with SessionLocal() as db:
         if args.reset:
             for table in [
+<<<<<<< HEAD
+=======
+                "activity_events",
+                "screen_sessions",
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
                 "tasks",
                 "team_memberships",
                 "teams",

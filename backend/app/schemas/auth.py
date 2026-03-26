@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import re
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
@@ -11,10 +12,14 @@ def _validate_password_complexity(v: str) -> str:
     if not re.search(r"\d", v):
         raise ValueError("Password must contain at least one digit")
     return v
+=======
+from pydantic import BaseModel, EmailStr, Field
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
 
 class RegisterRequest(BaseModel):
     email: EmailStr
+<<<<<<< HEAD
     password: str = Field(min_length=8, max_length=128)
     full_name: str = Field(min_length=1, max_length=255)
 
@@ -55,3 +60,16 @@ class ResetPasswordRequest(BaseModel):
     @classmethod
     def password_complexity(cls, v: str) -> str:
         return _validate_password_complexity(v)
+=======
+    password: str = Field(min_length=8)
+    full_name: str = Field(min_length=1, max_length=255)
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+
+class GoogleLoginRequest(BaseModel):
+    id_token: str = Field(min_length=10)
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb

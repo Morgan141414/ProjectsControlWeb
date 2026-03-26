@@ -1,9 +1,13 @@
 import api from './client'
+<<<<<<< HEAD
 import type { Org, OrgWithRole, JoinRequest } from '../types'
 
 export function listMyOrgs() {
   return api.get<OrgWithRole[]>('/orgs')
 }
+=======
+import type { Org, JoinRequest } from '../types'
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
 export function createOrg(name: string) {
   return api.post<Org>('/orgs', { name })

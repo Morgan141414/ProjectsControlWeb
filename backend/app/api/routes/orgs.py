@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.audit import log_audit
+<<<<<<< HEAD
 from app.core.deps import get_current_user, get_db, get_org_membership, require_role, HR_ROLES, MANAGEMENT_ROLES
 from app.models.enums import AuditAction, JoinStatus, OrgRole
 from app.models.org import OrgJoinRequest, OrgMembership, Organization
@@ -13,21 +14,38 @@ from app.schemas.org import (
     OrgResponse,
     OrgWithRoleResponse,
 )
+=======
+from app.core.deps import get_current_user, get_db, get_org_membership, require_role
+from app.models.enums import AuditAction, JoinStatus, OrgRole
+from app.models.org import OrgJoinRequest, OrgMembership, Organization
+from app.models.user import User
+from app.schemas.org import JoinRequestCreate, JoinRequestResponse, OrgCreate, OrgResponse
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
 router = APIRouter(prefix="/orgs", tags=["orgs"])
 
 
+<<<<<<< HEAD
 @router.get("", response_model=list[OrgWithRoleResponse])
 def list_orgs(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> list[dict]:
     """List organizations the current user belongs to, with their role in each."""
+=======
+@router.get("", response_model=list[OrgResponse])
+def list_orgs(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> list[Organization]:
+    """List organizations the current user belongs to."""
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     memberships = (
         db.query(OrgMembership)
         .filter(OrgMembership.user_id == current_user.id)
         .all()
     )
+<<<<<<< HEAD
     if not memberships:
         return []
 
@@ -55,6 +73,12 @@ def list_orgs(
         }
         result.append(org_dict)
     return result
+=======
+    org_ids = [m.org_id for m in memberships]
+    if not org_ids:
+        return []
+    return db.query(Organization).filter(Organization.id.in_(org_ids)).all()
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
 
 @router.post("", response_model=OrgResponse, status_code=status.HTTP_201_CREATED)
@@ -63,12 +87,20 @@ def create_org(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> Organization:
+<<<<<<< HEAD
     """Create organization. Creator becomes super_ceo."""
     org = Organization(name=payload.name, owner_id=current_user.id)
     db.add(org)
     db.flush()
 
     membership = OrgMembership(org_id=org.id, user_id=current_user.id, role=OrgRole.super_ceo)
+=======
+    org = Organization(name=payload.name)
+    db.add(org)
+    db.flush()
+
+    membership = OrgMembership(org_id=org.id, user_id=current_user.id, role=OrgRole.admin)
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     db.add(membership)
     log_audit(
         db,
@@ -119,11 +151,14 @@ def create_join_request(
 
     request = OrgJoinRequest(org_id=org.id, user_id=current_user.id)
     db.add(request)
+<<<<<<< HEAD
 
     if org.auto_approve:
         request.status = JoinStatus.approved
         db.add(OrgMembership(org_id=org.id, user_id=current_user.id, role=OrgRole.member))
 
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     db.commit()
     db.refresh(request)
     return request
@@ -149,7 +184,11 @@ def list_join_requests(
     current_user: User = Depends(get_current_user),
 ) -> list[OrgJoinRequest]:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     require_role(membership, HR_ROLES | {OrgRole.superadmin})
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     return (
         db.query(OrgJoinRequest)
@@ -170,7 +209,11 @@ def approve_join_request(
     current_user: User = Depends(get_current_user),
 ) -> OrgJoinRequest:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     require_role(membership, HR_ROLES | {OrgRole.superadmin})
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     join_request = db.get(OrgJoinRequest, request_id)
     if not join_request or join_request.org_id != org_id:
@@ -215,7 +258,11 @@ def reject_join_request(
     current_user: User = Depends(get_current_user),
 ) -> OrgJoinRequest:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     require_role(membership, HR_ROLES | {OrgRole.superadmin})
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     join_request = db.get(OrgJoinRequest, request_id)
     if not join_request or join_request.org_id != org_id:

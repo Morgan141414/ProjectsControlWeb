@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from app.schemas.activity import AuditLogResponse
 from app.schemas.auth import RegisterRequest, Token
 from app.schemas.ai_score import AIScoreBaseline, AIScoreRebuildResponse, AIScoreSnapshotResponse, AIScoreTrendPoint
@@ -5,15 +6,39 @@ from app.schemas.ai_score import AIScorecard, AIChangeReason, AIDriverImpact, AI
 from app.schemas.privacy import PrivacyRuleCreate, PrivacyRuleResponse, PrivacyRuleUpdate
 from app.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
 from app.schemas.project_reports import ProjectKPIItem, ProjectKPIReport
+=======
+from app.schemas.activity import (
+    ActivityEventCreate,
+    ActivityEventResponse,
+    AuditLogResponse,
+    EventsCleanupResponse,
+    RecordingCleanupResponse,
+    RecordingResponse,
+    SessionResponse,
+    SessionStart,
+    SessionStop,
+)
+from app.schemas.auth import RegisterRequest, Token
+from app.schemas.ai_score import AIScoreBaseline, AIScoreRebuildResponse, AIScoreSnapshotResponse, AIScoreTrendPoint
+from app.schemas.ai_score import AIScorecard, AIChangeReason, AIDriverImpact, AIInterpretation
+from app.schemas.metrics import AppUsageItem, SessionMetricsResponse, UserMetricsResponse
+from app.schemas.privacy import PrivacyRuleCreate, PrivacyRuleResponse, PrivacyRuleUpdate
+from app.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
+from app.schemas.project_reports import ProjectKPIItem, ProjectKPIReport
+from app.schemas.performance import ActivityPerTaskResponse
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 from app.schemas.notification import NotificationHookCreate, NotificationHookResponse, NotificationHookUpdate
 from app.schemas.reports import KPIOrgReport, KPITeamRow, KPIUserRow
 from app.schemas.reporting import ReportExportResponse, ReportScheduleCreate, ReportScheduleResponse
 from app.schemas.org import JoinRequestCreate, JoinRequestResponse, OrgCreate, OrgResponse
+<<<<<<< HEAD
 from app.schemas.support import (
     SupportMessageResponse,
     SupportThreadResponse,
     SupportThreadStatusUpdate,
 )
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 from app.schemas.task import TaskCreate, TaskResponse, TaskUpdate
 from app.schemas.team import TeamCreate, TeamMemberAdd, TeamResponse
 from app.schemas.team import TeamUpdate
@@ -21,7 +46,19 @@ from app.schemas.user import UserProfileUpdate, UserResponse
 from app.schemas.daily_report import DailyReportCreate, DailyReportResponse
 
 __all__ = [
+<<<<<<< HEAD
     "AuditLogResponse",
+=======
+    "ActivityEventCreate",
+    "ActivityEventResponse",
+    "AuditLogResponse",
+    "EventsCleanupResponse",
+    "RecordingCleanupResponse",
+    "RecordingResponse",
+    "SessionResponse",
+    "SessionStart",
+    "SessionStop",
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     "RegisterRequest",
     "Token",
     "AIScoreBaseline",
@@ -32,6 +69,12 @@ __all__ = [
     "AIChangeReason",
     "AIDriverImpact",
     "AIInterpretation",
+<<<<<<< HEAD
+=======
+    "AppUsageItem",
+    "SessionMetricsResponse",
+    "UserMetricsResponse",
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     "PrivacyRuleCreate",
     "PrivacyRuleResponse",
     "PrivacyRuleUpdate",
@@ -40,6 +83,10 @@ __all__ = [
     "ProjectUpdate",
     "ProjectKPIItem",
     "ProjectKPIReport",
+<<<<<<< HEAD
+=======
+    "ActivityPerTaskResponse",
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     "NotificationHookCreate",
     "NotificationHookResponse",
     "NotificationHookUpdate",
@@ -53,9 +100,12 @@ __all__ = [
     "JoinRequestResponse",
     "OrgCreate",
     "OrgResponse",
+<<<<<<< HEAD
     "SupportMessageResponse",
     "SupportThreadResponse",
     "SupportThreadStatusUpdate",
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     "TaskCreate",
     "TaskResponse",
     "TaskUpdate",

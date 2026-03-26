@@ -1,6 +1,10 @@
 from datetime import datetime
 
+<<<<<<< HEAD
 from sqlalchemy import Boolean, DateTime, Integer, String, Text
+=======
+from sqlalchemy import Boolean, DateTime, String, Text
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -16,13 +20,17 @@ class User(Base):
     first_name: Mapped[str | None] = mapped_column(String(100))
     last_name: Mapped[str | None] = mapped_column(String(100))
     patronymic: Mapped[str | None] = mapped_column(String(100))
+<<<<<<< HEAD
     phone: Mapped[str | None] = mapped_column(String(20))
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     bio: Mapped[str | None] = mapped_column(Text)
     specialty: Mapped[str | None] = mapped_column(String(120))
     avatar_url: Mapped[str | None] = mapped_column(String(500))
     socials_json: Mapped[str | None] = mapped_column(Text)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+<<<<<<< HEAD
     is_superadmin: Mapped[bool] = mapped_column(Boolean, default=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     totp_secret: Mapped[str | None] = mapped_column(String(64))
@@ -37,6 +45,8 @@ class User(Base):
     portfolio_url: Mapped[str | None] = mapped_column(String(500))
     is_looking_for_job: Mapped[bool] = mapped_column(Boolean, default=False)
     desired_salary: Mapped[int | None] = mapped_column(Integer)
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     org_memberships = relationship(

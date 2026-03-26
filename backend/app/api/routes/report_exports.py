@@ -7,12 +7,20 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from app.core.audit import log_audit
+<<<<<<< HEAD
 from app.core.deps import get_current_user, get_db, get_org_membership, require_role, MANAGEMENT_ROLES
+=======
+from app.core.deps import get_current_user, get_db, get_org_membership, require_role
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 from app.core.report_exports import ReportExportError, export_org_kpi, export_project_kpi
 from app.core.reporting_runner import run_schedule_export
 from app.core.notifications import send_notification
 from app.core.time import utc_now_naive
+<<<<<<< HEAD
 from app.models.enums import AuditAction, NotificationEvent
+=======
+from app.models.enums import AuditAction, NotificationEvent, OrgRole
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 from app.models.reporting import ReportExport, ReportSchedule
 from app.models.user import User
 from app.schemas.reporting import ReportExportResponse, ReportScheduleCreate, ReportScheduleResponse
@@ -93,7 +101,11 @@ def export_org_kpi_report(
     current_user: User = Depends(get_current_user),
 ) -> ReportExport:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     require_role(membership, MANAGEMENT_ROLES)
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     report = compute_org_kpi_report(
         db,
@@ -147,7 +159,11 @@ def export_project_kpi_report(
     current_user: User = Depends(get_current_user),
 ) -> ReportExport:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     require_role(membership, MANAGEMENT_ROLES)
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     report = compute_project_kpi_report(
         db,
@@ -196,7 +212,11 @@ def list_exports(
     current_user: User = Depends(get_current_user),
 ) -> list[ReportExport]:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     require_role(membership, MANAGEMENT_ROLES)
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     return (
         db.query(ReportExport)
@@ -214,7 +234,11 @@ def download_export(
     current_user: User = Depends(get_current_user),
 ) -> FileResponse:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     require_role(membership, MANAGEMENT_ROLES)
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     export = db.get(ReportExport, export_id)
     if not export or export.org_id != org_id:
@@ -235,7 +259,11 @@ def create_schedule(
     current_user: User = Depends(get_current_user),
 ) -> ReportSchedule:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     require_role(membership, MANAGEMENT_ROLES)
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     if payload.report_type not in {"org_kpi", "project_kpi"}:
         raise HTTPException(status_code=400, detail="Unsupported report type")
@@ -275,7 +303,11 @@ def list_schedules(
     current_user: User = Depends(get_current_user),
 ) -> list[ReportSchedule]:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     require_role(membership, MANAGEMENT_ROLES)
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     return (
         db.query(ReportSchedule)
@@ -294,7 +326,11 @@ def run_schedule(
     current_user: User = Depends(get_current_user),
 ) -> ReportExport:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     require_role(membership, MANAGEMENT_ROLES)
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     schedule = db.get(ReportSchedule, schedule_id)
     if not schedule or schedule.org_id != org_id:

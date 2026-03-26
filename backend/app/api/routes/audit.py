@@ -1,7 +1,11 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
+<<<<<<< HEAD
 from app.core.deps import get_current_user, get_db, get_org_membership, require_role, MANAGEMENT_ROLES
+=======
+from app.core.deps import get_current_user, get_db, get_org_membership, require_role
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 from app.models.activity import AuditLog
 from app.models.enums import OrgRole
 from app.models.user import User
@@ -19,8 +23,12 @@ def list_audit_logs(
     current_user: User = Depends(get_current_user),
 ) -> list[AuditLog]:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     # super_ceo, ceo can see all logs; superadmin, founder can also view
     require_role(membership, MANAGEMENT_ROLES | {OrgRole.superadmin, OrgRole.founder, OrgRole.team_lead})
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     return (
         db.query(AuditLog)

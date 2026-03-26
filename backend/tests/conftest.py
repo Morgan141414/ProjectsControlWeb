@@ -9,9 +9,14 @@ from fastapi.testclient import TestClient
 def client(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{db_path}")
+<<<<<<< HEAD
     monkeypatch.setenv("JWT_SECRET_KEY", "test-secret-key-for-testing-only")
     monkeypatch.setenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60")
     monkeypatch.setenv("ENVIRONMENT", "testing")
+=======
+    monkeypatch.setenv("JWT_SECRET_KEY", "test-secret")
+    monkeypatch.setenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60")
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     import app.core.config
     import app.db.session
@@ -23,6 +28,7 @@ def client(tmp_path, monkeypatch):
 
     with TestClient(app.main.app) as test_client:
         yield test_client
+<<<<<<< HEAD
 
 
 # ---------------------------------------------------------------------------
@@ -49,3 +55,5 @@ def login_user(client, email="test@example.com", password="TestPass1!"):
 
 def auth_headers(token: str) -> dict:
     return {"Authorization": f"Bearer {token}"}
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb

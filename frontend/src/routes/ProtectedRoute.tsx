@@ -1,10 +1,14 @@
+<<<<<<< HEAD
 import { useState, useEffect } from 'react'
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 import { Navigate } from 'react-router'
 import { useAuthStore } from '@/stores/authStore'
 import { AppShell } from '@/components/layout/AppShell'
 
 export function ProtectedRoute() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+<<<<<<< HEAD
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
@@ -31,6 +35,8 @@ export function ProtectedRoute() {
     // No token in storage at all — redirect immediately
     return <Navigate to="/login" replace />
   }
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />

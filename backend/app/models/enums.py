@@ -1,6 +1,7 @@
 from enum import Enum
 
 
+<<<<<<< HEAD
 class CertificateStatus(str, Enum):
     active = "active"
     expired = "expired"
@@ -17,6 +18,11 @@ class OrgRole(str, Enum):
     project_manager = "project_manager"
     developer = "developer"
     founder = "founder"
+=======
+class OrgRole(str, Enum):
+    admin = "admin"
+    manager = "manager"
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
     member = "member"
 
 
@@ -33,12 +39,30 @@ class TaskStatus(str, Enum):
 
 
 class TeamRole(str, Enum):
+<<<<<<< HEAD
     team_lead = "team_lead"
     project_manager = "project_manager"
     developer = "developer"
     member = "member"
 
 
+=======
+    member = "member"
+    lead = "lead"
+
+
+class SessionStatus(str, Enum):
+    active = "active"
+    stopped = "stopped"
+
+
+class ActivityType(str, Enum):
+    app = "app"
+    input = "input"
+    idle = "idle"
+    system = "system"
+
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
 class AuditAction(str, Enum):
     create = "create"
@@ -72,6 +96,7 @@ class NotificationEvent(str, Enum):
 class ScorePeriod(str, Enum):
     daily = "daily"
     weekly = "weekly"
+<<<<<<< HEAD
 
 
 class TaskPriority(str, Enum):
@@ -79,3 +104,5 @@ class TaskPriority(str, Enum):
     medium = "medium"
     high = "high"
     critical = "critical"
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb

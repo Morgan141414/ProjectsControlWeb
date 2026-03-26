@@ -4,7 +4,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.audit import log_audit
+<<<<<<< HEAD
 from app.core.deps import get_current_user, get_db, get_org_membership, require_role, PROJECT_ROLES
+=======
+from app.core.deps import get_current_user, get_db, get_org_membership, require_role
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 from app.models.enums import AuditAction, OrgRole
 from app.models.org import OrgMembership
 from app.models.task import Task
@@ -23,8 +27,12 @@ def create_task(
     current_user: User = Depends(get_current_user),
 ) -> Task:
     membership = get_org_membership(org_id, current_user, db)
+<<<<<<< HEAD
     # team_lead, project_manager, ceo, super_ceo can create tasks; developers can also create own tasks
     require_role(membership, PROJECT_ROLES | {OrgRole.developer})
+=======
+    require_role(membership, {OrgRole.admin, OrgRole.manager})
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
     if payload.assignee_id:
         assignee_membership = (
@@ -98,7 +106,14 @@ def update_task(
     if not task or task.org_id != org_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
 
+<<<<<<< HEAD
     if task.assignee_id != current_user.id and membership.role not in PROJECT_ROLES:
+=======
+    if task.assignee_id != current_user.id and membership.role not in {
+        OrgRole.admin,
+        OrgRole.manager,
+    }:
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not allowed")
 
     if payload.status is not None:

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 Storage abstraction layer.
 
@@ -20,11 +21,16 @@ import io
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import BinaryIO
+=======
+import hashlib
+from pathlib import Path
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
 from fastapi import UploadFile
 
 from app.core.config import settings
 
+<<<<<<< HEAD
 CHUNK_SIZE = 1024 * 1024  # 1 MB
 
 
@@ -33,6 +39,11 @@ class StorageError(ValueError):
 
 
 # ── helpers ─────────────────────────────────────────────────────
+=======
+
+class StorageError(ValueError):
+    pass
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
 
 def _safe_suffix(filename: str | None) -> str:
@@ -44,6 +55,7 @@ def _safe_suffix(filename: str | None) -> str:
     return suffix
 
 
+<<<<<<< HEAD
 def _object_key(org_id: str, session_id: str, recording_id: str, suffix: str) -> str:
     """Build a deterministic key used by both drivers."""
     return f"{org_id}/{session_id}/{recording_id}{suffix}"
@@ -253,11 +265,43 @@ storage: StorageDriver = _create_driver()
 # The old ``save_upload`` function is kept so existing callers don't break.
 
 
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 def save_upload(
     file: UploadFile,
     org_id: str,
     session_id: str,
     recording_id: str,
 ) -> tuple[str, int, str]:
+<<<<<<< HEAD
     """Legacy helper – delegates to ``storage.save``."""
     return storage.save(file, org_id, session_id, recording_id)
+=======
+    if settings.STORAGE_DRIVER != "local":
+        raise StorageError("Only local storage is configured")
+
+    base_dir = Path(settings.STORAGE_PATH).resolve()
+    target_dir = base_dir / org_id / session_id
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    suffix = _safe_suffix(file.filename)
+    target_path = target_dir / f"{recording_id}{suffix}"
+
+    hasher = hashlib.sha256()
+    total_bytes = 0
+    max_bytes = settings.MAX_UPLOAD_MB * 1024 * 1024
+
+    with target_path.open("wb") as handle:
+        while True:
+            chunk = file.file.read(1024 * 1024)
+            if not chunk:
+                break
+            total_bytes += len(chunk)
+            if total_bytes > max_bytes:
+                target_path.unlink(missing_ok=True)
+                raise StorageError("Upload exceeds size limit")
+            handle.write(chunk)
+            hasher.update(chunk)
+
+    return str(target_path), total_bytes, hasher.hexdigest()
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb

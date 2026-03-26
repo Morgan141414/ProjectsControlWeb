@@ -2,14 +2,19 @@ export interface User {
   id: string
   email: string
   full_name: string
+<<<<<<< HEAD
   first_name?: string
   last_name?: string
   patronymic?: string
   phone?: string
+=======
+  patronymic?: string
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
   bio?: string
   specialty?: string
   avatar_url?: string
   socials_json?: string
+<<<<<<< HEAD
   is_superadmin?: boolean
   totp_enabled?: boolean
   position?: string
@@ -92,11 +97,15 @@ export const ROLE_LABELS: Record<OrgRole, string> = {
   developer: 'Developer',
   founder: 'Founder',
   member: 'Member',
+=======
+  org_id?: string
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 }
 
 export interface Org {
   id: string
   name: string
+<<<<<<< HEAD
   code?: string
   join_code: string
   owner_id?: string
@@ -114,6 +123,10 @@ export interface Org {
 
 export interface OrgWithRole extends Org {
   role: OrgRole
+=======
+  code: string
+  owner_id: string
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 }
 
 export interface JoinRequest {
@@ -156,6 +169,7 @@ export interface Task {
   created_at: string
 }
 
+<<<<<<< HEAD
 // Board types
 export type TaskPriority = 'low' | 'medium' | 'high' | 'critical'
 
@@ -231,6 +245,15 @@ export interface ProjectStats {
   by_priority: Record<string, number>
   overdue: number
   total_story_points: number
+=======
+export interface Session {
+  id: string
+  user_id: string
+  device_name?: string
+  os_name?: string
+  started_at: string
+  ended_at?: string
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 }
 
 export interface ConsentStatus {
@@ -239,6 +262,7 @@ export interface ConsentStatus {
   accepted_at?: string
 }
 
+<<<<<<< HEAD
 export interface Certificate {
   id: string
   org_id: string
@@ -264,6 +288,8 @@ export interface RolePermission {
   permission_id: string
 }
 
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 export type KpiReport = Record<string, unknown>
 export type AiScorecard = Record<string, unknown>
 export type AuditLog = Record<string, unknown>
@@ -271,6 +297,7 @@ export type PrivacyRule = Record<string, unknown>
 export type NotificationHook = Record<string, unknown>
 export type ReportExport = Record<string, unknown>
 export type ReportSchedule = Record<string, unknown>
+<<<<<<< HEAD
 export interface SupportMessage {
   id: string
   thread_id: string
@@ -312,3 +339,7 @@ export interface SupportStats {
   closed: number
   unread_total: number
 }
+=======
+export type SessionMetrics = Record<string, unknown>
+export type UserMetrics = Record<string, unknown>
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb

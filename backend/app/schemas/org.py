@@ -1,6 +1,10 @@
 from pydantic import BaseModel, ConfigDict, Field
 
+<<<<<<< HEAD
 from app.models.enums import JoinStatus, OrgRole
+=======
+from app.models.enums import JoinStatus
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
 
 class OrgCreate(BaseModel):
@@ -13,6 +17,7 @@ class OrgResponse(BaseModel):
     id: str
     name: str
     join_code: str
+<<<<<<< HEAD
     description: str | None = None
     industry: str | None = None
     website: str | None = None
@@ -43,6 +48,8 @@ class OrgWithRoleResponse(BaseModel):
     welcome_message: str | None = None
     theme_color: str | None = None
     role: str = "member"
+=======
+>>>>>>> 609163d138e100e3981a912d27f6f5a94e7008cb
 
 
 class JoinRequestCreate(BaseModel):
